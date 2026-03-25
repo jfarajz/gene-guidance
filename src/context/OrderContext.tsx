@@ -34,6 +34,7 @@ interface OrderContextType {
   setDiagnoses: (d: Diagnosis[]) => void;
   setMedications: (m: Medication[]) => void;
   addMedication: (m: Medication) => void;
+  updateMedication: (id: string, updates: Partial<Medication>) => void;
   removeMedication: (id: string) => void;
   loadDemo: (state: OrderState) => void;
   resetOrder: () => void;
@@ -65,6 +66,12 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       return { ...prev, medications: meds, qualification: requalify(meds, prev.diagnoses) };
     });
 
+  const updateMedication = (id: string, updates: Partial<Medication>) =>
+    setOrder(prev => {
+      const meds = prev.medications.map(m => m.id === id ? { ...m, ...updates } : m);
+      return { ...prev, medications: meds, qualification: requalify(meds, prev.diagnoses) };
+    });
+
   const removeMedication = (id: string) =>
     setOrder(prev => {
       const meds = prev.medications.filter(m => m.id !== id);
@@ -78,7 +85,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     <OrderContext.Provider value={{
       order, setStep, updateProvider, updatePatient, updateInsurance,
       updateCollection, setDiagnoses, setMedications, addMedication,
-      removeMedication, loadDemo, resetOrder
+      updateMedication, removeMedication, loadDemo, resetOrder
     }}>
       {children}
     </OrderContext.Provider>
