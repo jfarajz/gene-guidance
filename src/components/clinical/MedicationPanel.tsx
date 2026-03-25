@@ -3,7 +3,7 @@ import { useOrder } from '@/context/OrderContext';
 import { MEDICATION_DATABASE } from '@/data/constants';
 import { getGeneMatches } from '@/engine/qualification';
 import type { Medication } from '@/types/order';
-import { X, Check, AlertTriangle } from 'lucide-react';
+import { X, Check, AlertTriangle, ChevronDown } from 'lucide-react';
 
 export function MedicationPanel() {
   const { order, addMedication, removeMedication } = useOrder();
@@ -129,45 +129,78 @@ export function MedicationPanel() {
 }
 
 function MedRow({ med, onRemove }: { med: Medication; onRemove: () => void }) {
+  const { order, updateMedication } = useOrder();
+
   return (
-    <div className={`group rounded-lg px-3 py-2 flex items-center gap-2 border ${
+    <div className={`group rounded-lg px-3 py-2 border ${
       med.isBillable ? 'bg-card border-border' : 'bg-tier-red-bg border-tier-red-border'
     }`}>
-      <div className="flex-1 min-w-0">
-        <span className="font-medium text-sm text-foreground">{med.generic}</span>
-        {(med.dose || med.frequency) && (
-          <span className="text-xs text-text-tertiary ml-1.5">{[med.dose, med.frequency].filter(Boolean).join(' ')}</span>
-        )}
+      {/* Top row: name + badges */}
+      <div className="flex items-center gap-2">
+        <div className="flex-1 min-w-0">
+          <span className="font-medium text-sm text-foreground">{med.generic}</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {med.isBillable ? (
+            <>
+              {med.geneMatches.map(gm => (
+                <span key={gm.gene} className="bg-gene-badge-bg text-gene-badge-text text-[10px] px-1.5 py-0.5 rounded font-medium">
+                  {gm.gene}
+                </span>
+              ))}
+              {med.geneMatches.map(gm => (
+                <span key={gm.cpt} className="bg-gene-badge-bg text-gene-badge-text text-[10px] px-1.5 py-0.5 rounded font-medium">
+                  {gm.cpt}
+                </span>
+              ))}
+              <Check size={14} className="text-tier-green" />
+            </>
+          ) : (
+            <>
+              <span className="text-destructive bg-tier-red-bg border border-tier-red-border text-[10px] px-1.5 py-0.5 rounded font-medium">
+                Not in MolDx
+              </span>
+              <AlertTriangle size={14} className="text-destructive" />
+            </>
+          )}
+          <button
+            onClick={onRemove}
+            className="opacity-0 group-hover:opacity-100 text-text-tertiary hover:text-destructive transition-all cursor-pointer ml-1"
+          >
+            <X size={14} />
+          </button>
+        </div>
       </div>
-      <div className="flex items-center gap-1.5 shrink-0">
-        {med.isBillable ? (
-          <>
-            {med.geneMatches.map(gm => (
-              <span key={gm.gene} className="bg-gene-badge-bg text-gene-badge-text text-[10px] px-1.5 py-0.5 rounded font-medium">
-                {gm.gene}
-              </span>
+
+      {/* Bottom row: dose, frequency, linked diagnosis */}
+      <div className="flex items-center gap-2 mt-1.5">
+        <input
+          type="text"
+          value={med.dose}
+          onChange={e => updateMedication(med.id, { dose: e.target.value })}
+          placeholder="Dose"
+          className="w-[80px] h-6 rounded border border-border px-2 text-xs text-foreground placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-primary bg-background"
+        />
+        <input
+          type="text"
+          value={med.frequency}
+          onChange={e => updateMedication(med.id, { frequency: e.target.value })}
+          placeholder="Frequency"
+          className="w-[100px] h-6 rounded border border-border px-2 text-xs text-foreground placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-primary bg-background"
+        />
+        <div className="relative ml-auto">
+          <select
+            value={med.linkedDiagnosis}
+            onChange={e => updateMedication(med.id, { linkedDiagnosis: e.target.value })}
+            className="h-6 rounded border border-border pl-2 pr-5 text-xs text-text-secondary bg-background appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary"
+          >
+            {order.diagnoses.length === 0 && <option value="">No diagnoses</option>}
+            {order.diagnoses.map(d => (
+              <option key={d.code} value={d.code}>{d.code}</option>
             ))}
-            {med.geneMatches.map(gm => (
-              <span key={gm.cpt} className="bg-gene-badge-bg text-gene-badge-text text-[10px] px-1.5 py-0.5 rounded font-medium">
-                {gm.cpt}
-              </span>
-            ))}
-            <Check size={14} className="text-tier-green" />
-          </>
-        ) : (
-          <>
-            <span className="text-destructive bg-tier-red-bg border border-tier-red-border text-[10px] px-1.5 py-0.5 rounded font-medium">
-              Not in MolDx
-            </span>
-            <AlertTriangle size={14} className="text-destructive" />
-          </>
-        )}
-        <button
-          onClick={onRemove}
-          className="opacity-0 group-hover:opacity-100 text-text-tertiary hover:text-destructive transition-all cursor-pointer ml-1"
-        >
-          <X size={14} />
-        </button>
+          </select>
+          <ChevronDown size={10} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-text-tertiary pointer-events-none" />
+        </div>
       </div>
     </div>
   );
