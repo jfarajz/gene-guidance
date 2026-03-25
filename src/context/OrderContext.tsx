@@ -34,6 +34,7 @@ interface OrderContextType {
   setDiagnoses: (d: Diagnosis[]) => void;
   setMedications: (m: Medication[]) => void;
   addMedication: (m: Medication) => void;
+  updateMedication: (id: string, updates: Partial<Medication>) => void;
   removeMedication: (id: string) => void;
   loadDemo: (state: OrderState) => void;
   resetOrder: () => void;
