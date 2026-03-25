@@ -1,16 +1,26 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { OrderProvider, useOrder } from '@/context/OrderContext';
+import { AppShell } from '@/components/AppShell';
+import { WizardStep } from '@/components/WizardStep';
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+function WizardRouter() {
+  const { order } = useOrder();
+
+  switch (order.currentStep) {
+    case 0: return <WizardStep title="Provider" />;
+    case 1: return <WizardStep title="Patient" />;
+    case 2: return <WizardStep title="Clinical" />;
+    case 3: return <WizardStep title="Review" />;
+    case 4: return <WizardStep title="Documents" />;
+    default: return null;
+  }
+}
+
+export default function Index() {
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
-    </div>
+    <OrderProvider>
+      <AppShell>
+        <WizardRouter />
+      </AppShell>
+    </OrderProvider>
   );
-};
-
-const Index = PlaceholderIndex;
-
-export default Index;
+}
