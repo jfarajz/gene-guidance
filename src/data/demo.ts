@@ -22,17 +22,17 @@ const sharedBase: Omit<OrderState, 'medications' | 'qualification'> = {
     zip: "90064"
   },
   patient: {
-    firstName: "Jahanbakhsh",
+    firstName: "Fatemeh",
     lastName: "Tahmasb",
-    dob: "06/15/1952",
-    gender: "Male",
+    dob: "12/14/1939",
+    gender: "Female",
     ethnicity: "Middle Eastern",
-    address1: "2136 Westwood Blvd",
-    address2: "Apt 4",
-    city: "Los Angeles",
+    address1: "22100 Burbank Blvd",
+    address2: "",
+    city: "Woodland Hills",
     state: "CA",
-    zip: "90025",
-    phone: "(310) 555-0147",
+    zip: "91367",
+    phone: "(818) 555-0147",
     email: ""
   },
   insurance: {
@@ -56,12 +56,12 @@ const sharedBase: Omit<OrderState, 'medications' | 'qualification'> = {
 };
 
 const completeMeds = [
-  makeMed("m1", "empagliflozin", "Jardiance", "25mg", "daily", "prescribed", "E78.2"),
+  makeMed("m1", "empagliflozin", "Jardiance", "10mg", "daily", "prescribed", "E78.2"),
   makeMed("m2", "escitalopram", "Lexapro", "10mg", "daily", "prescribed", "F41.1"),
-  makeMed("m3", "losartan", "Cozaar", "50mg", "daily", "prescribed", "I10"),
-  makeMed("m4", "hydrochlorothiazide", "Microzide", "25mg", "daily", "prescribed", "I10"),
+  makeMed("m3", "losartan", "Cozaar", "100mg", "daily", "prescribed", "I10"),
+  makeMed("m4", "hydrochlorothiazide", "Microzide", "12.5mg", "daily", "prescribed", "I10"),
   makeMed("m5", "triazolam", "Halcion", "0.25mg", "at bedtime", "prescribed", "F41.1"),
-  makeMed("m6", "clonazepam", "Klonopin", "0.5mg", "BID", "prescribed", "F41.1"),
+  makeMed("m6", "clonazepam", "Klonopin", "0.25mg", "BID", "prescribed", "F41.1"),
   makeMed("m7", "clopidogrel", "Plavix", "75mg", "daily", "prescribed", "I10"),
   makeMed("m8", "meloxicam", "Mobic", "15mg", "daily", "prescribed", "I10"),
   makeMed("m9", "codeine", "Codeine", "30mg", "PRN", "considered", "F41.1"),
