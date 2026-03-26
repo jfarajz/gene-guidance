@@ -4,6 +4,7 @@ import { WizardStep } from '@/components/WizardStep';
 import { ProviderScreen } from '@/components/ProviderScreen';
 import { PatientScreen } from '@/components/PatientScreen';
 import { ClinicalScreen } from '@/components/clinical/ClinicalScreen';
+import { ReviewScreen } from '@/components/ReviewScreen';
 
 function WizardRouter() {
   const { order } = useOrder();
@@ -12,7 +13,7 @@ function WizardRouter() {
     case 0: return <ProviderScreen />;
     case 1: return <PatientScreen />;
     case 2: return <ClinicalScreen />;
-    case 3: return <WizardStep title="Review" />;
+    case 3: return <ReviewScreen />;
     case 4: return <WizardStep title="Documents" />;
     default: return null;
   }

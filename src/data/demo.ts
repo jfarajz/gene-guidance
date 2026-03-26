@@ -12,6 +12,7 @@ function makeMed(
 
 const sharedBase: Omit<OrderState, 'medications' | 'qualification'> = {
   currentStep: 2,
+  orderNumber: '',
   provider: {
     npi: "1528419710",
     name: "Dr. Saeid Karandish",

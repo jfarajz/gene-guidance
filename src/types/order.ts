@@ -85,6 +85,7 @@ export interface CollectionInfo {
 
 export interface OrderState {
   currentStep: number;
+  orderNumber: string;
   provider: ProviderInfo;
   patient: PatientInfo;
   insurance: InsuranceInfo;

@@ -4,6 +4,7 @@ import { qualifyOrder } from '@/engine/qualification';
 
 const emptyState: OrderState = {
   currentStep: 0,
+  orderNumber: '',
   provider: { npi: '', name: '', facilityName: '', address: '', city: '', state: '', zip: '' },
   patient: { firstName: '', lastName: '', dob: '', gender: '', ethnicity: '', address1: '', address2: '', city: '', state: '', zip: '', phone: '', email: '' },
   insurance: { type: '', provider: '', policyId: '', groupId: '', phoneNumber: '', relationshipToInsured: '' },
