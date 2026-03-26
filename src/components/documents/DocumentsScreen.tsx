@@ -40,7 +40,7 @@ export function DocumentsScreen() {
   const getPdfOptions = useCallback((filename: string) => ({
     margin: [0.5, 0.5, 0.5, 0.5] as [number, number, number, number],
     filename,
-    image: { type: 'jpeg', quality: 0.98 },
+    image: { type: 'jpeg' as const, quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, letterRendering: true },
     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' as const },
     pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
