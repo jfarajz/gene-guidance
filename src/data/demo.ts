@@ -1,26 +1,41 @@
-import type { OrderState } from '@/types/order';
-import { getGeneMatches } from '@/engine/qualification';
-import { qualifyOrder } from '@/engine/qualification';
+import type { OrderState } from "@/types/order";
+import { getGeneMatches } from "@/engine/qualification";
+import { qualifyOrder } from "@/engine/qualification";
 
 function makeMed(
-  id: string, generic: string, brand: string, dose: string, frequency: string,
-  type: 'prescribed' | 'considered', linkedDiagnosis: string
+  id: string,
+  generic: string,
+  brand: string,
+  dose: string,
+  frequency: string,
+  type: "prescribed" | "considered",
+  linkedDiagnosis: string,
 ) {
   const geneMatches = getGeneMatches(generic);
-  return { id, generic, brand, dose, frequency, type, linkedDiagnosis, geneMatches, isBillable: geneMatches.length > 0 };
+  return {
+    id,
+    generic,
+    brand,
+    dose,
+    frequency,
+    type,
+    linkedDiagnosis,
+    geneMatches,
+    isBillable: geneMatches.length > 0,
+  };
 }
 
-const sharedBase: Omit<OrderState, 'medications' | 'qualification'> = {
+const sharedBase: Omit<OrderState, "medications" | "qualification"> = {
   currentStep: 2,
-  orderNumber: '',
+  orderNumber: "",
   provider: {
     npi: "1528419710",
     name: "Dr. Saeid Karandish",
-    facilityName: "Firmalab Bio-Diagnostics",
+    facilityName: "Dr. Saeid Karandish",
     address: "16661 Ventura Boulevard Suite 313",
     city: "Encino",
     state: "CA",
-    zip: "91436"
+    zip: "91436",
   },
   patient: {
     firstName: "Fatemeh",
@@ -28,13 +43,13 @@ const sharedBase: Omit<OrderState, 'medications' | 'qualification'> = {
     dob: "1939-12-14",
     gender: "Female",
     ethnicity: "Other",
-    address1: "22100 Burbank Blvd",
+    address1: "20528 Ventura Blvd Apt #110",
     address2: "",
     city: "Woodland Hills",
     state: "CA",
-    zip: "91367",
-    phone: "(818) 555-0147",
-    email: "ftahmasb@email.com"
+    zip: "91364",
+    phone: "(516) 407-0043",
+    email: "newderm2023@gmail.com",
   },
   insurance: {
     type: "Medicare",
@@ -42,18 +57,18 @@ const sharedBase: Omit<OrderState, 'medications' | 'qualification'> = {
     policyId: "6NE6J27AV78",
     groupId: "",
     phoneNumber: "",
-    relationshipToInsured: "Self"
+    relationshipToInsured: "Self",
   },
   collection: {
     date: "2025-06-20",
     time: "14:00",
-    method: "Buccal Swab"
+    method: "Buccal Swab",
   },
   diagnoses: [
     { code: "F41.1", description: "Generalized anxiety disorder", tier: "green" },
     { code: "E78.2", description: "Mixed hyperlipidemia", tier: "yellow" },
-    { code: "I10", description: "Essential (primary) hypertension", tier: "yellow" }
-  ]
+    { code: "I10", description: "Essential (primary) hypertension", tier: "yellow" },
+  ],
 };
 
 const completeMeds = [
@@ -78,7 +93,7 @@ export const DEMO_COMPLETE: OrderState = {
   qualification: qualifyOrder(completeMeds, sharedBase.diagnoses),
 };
 
-const emptyMeds: OrderState['medications'] = [];
+const emptyMeds: OrderState["medications"] = [];
 export const DEMO_INTERACTIVE: OrderState = {
   ...sharedBase,
   medications: emptyMeds,
