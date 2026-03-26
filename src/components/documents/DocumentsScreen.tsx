@@ -155,7 +155,7 @@ export function DocumentsScreen() {
       </div>
 
       {/* Document viewer */}
-      <div className="document-viewer bg-card rounded-xl border border-border p-4 sm:p-8 max-w-[800px] mx-auto mb-6"
+      <div ref={docRef} className="document-viewer bg-card rounded-xl border border-border p-4 sm:p-8 max-w-[800px] mx-auto mb-6"
         style={{ minHeight: printAll ? 'auto' : '900px' }}
       >
         {printAll ? (
