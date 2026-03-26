@@ -1,0 +1,125 @@
+import { useState, useRef } from 'react';
+import { useOrder } from '@/context/OrderContext';
+import { ClinicalNoteDocument } from '@/components/documents/ClinicalNoteDocument';
+import { RequisitionDocument } from '@/components/documents/RequisitionDocument';
+import { LMNDocument } from '@/components/documents/LMNDocument';
+import { Printer } from 'lucide-react';
+
+type DocTab = 'note' | 'requisition' | 'lmn';
+
+const TABS: { key: DocTab; label: string }[] = [
+  { key: 'note', label: 'Clinical note' },
+  { key: 'requisition', label: 'Requisition' },
+  { key: 'lmn', label: 'Medical necessity letter' },
+];
+
+export function DocumentsScreen() {
+  const { order, setStep, resetOrder } = useOrder();
+  const [activeTab, setActiveTab] = useState<DocTab>('note');
+  const [printAll, setPrintAll] = useState(false);
+  const orderNumRef = useRef(
+    order.orderNumber || 'FRP-' + Math.floor(1000000 + Math.random() * 9000000).toString()
+  );
+  const orderNum = orderNumRef.current;
+
+  const handlePrint = () => {
+    setPrintAll(false);
+    setTimeout(() => window.print(), 100);
+  };
+
+  const handlePrintAll = () => {
+    setPrintAll(true);
+    setTimeout(() => window.print(), 100);
+  };
+
+  const handleNewOrder = () => {
+    resetOrder();
+    setStep(0);
+  };
+
+  return (
+    <div className="py-8">
+      {/* Title */}
+      <div className="no-print mb-6">
+        <h1 className="text-2xl font-semibold text-foreground">Documents</h1>
+        <p className="text-sm text-text-secondary mt-1">Your order documents are ready. Print or save as PDF.</p>
+      </div>
+
+      {/* Action bar */}
+      <div className="no-print flex items-center justify-between py-3 mb-4">
+        {/* Tabs */}
+        <div className="flex gap-2">
+          {TABS.map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                activeTab === tab.key
+                  ? 'bg-card border border-border font-medium text-foreground shadow-sm'
+                  : 'bg-surface text-muted-foreground hover:text-text-secondary cursor-pointer'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Print buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={handlePrintAll}
+            className="h-10 px-4 rounded-lg border border-input bg-background text-foreground text-sm font-medium hover:bg-muted transition-colors"
+          >
+            Print all
+          </button>
+          <button
+            onClick={handlePrint}
+            className="h-10 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors inline-flex items-center gap-2"
+          >
+            <Printer size={16} />
+            Print / Save as PDF
+          </button>
+        </div>
+      </div>
+
+      {/* Document viewer */}
+      <div className="document-viewer bg-card rounded-xl border border-border p-8 max-w-[800px] mx-auto mb-6"
+        style={{ minHeight: printAll ? 'auto' : '900px' }}
+      >
+        {printAll ? (
+          <>
+            <ClinicalNoteDocument state={order} />
+            <div className="page-break my-8 border-t-2 border-dashed border-border print:hidden" />
+            <div className="print-page-break" />
+            <RequisitionDocument state={order} orderNumber={orderNum} />
+            <div className="page-break my-8 border-t-2 border-dashed border-border print:hidden" />
+            <div className="print-page-break" />
+            <LMNDocument state={order} />
+          </>
+        ) : (
+          <>
+            {activeTab === 'note' && <ClinicalNoteDocument state={order} />}
+            {activeTab === 'requisition' && <RequisitionDocument state={order} orderNumber={orderNum} />}
+            {activeTab === 'lmn' && <LMNDocument state={order} />}
+          </>
+        )}
+      </div>
+
+      {/* Bottom navigation */}
+      <div className="no-print flex items-center justify-between mb-8">
+        <button
+          onClick={() => setStep(3)}
+          className="text-sm text-primary hover:underline cursor-pointer"
+        >
+          ← Back to review
+        </button>
+        <button
+          onClick={handleNewOrder}
+          className="h-10 px-6 rounded-lg border border-input bg-background text-foreground text-sm font-medium hover:bg-muted transition-colors"
+        >
+          Start new order
+        </button>
+      </div>
+    </div>
+  );
+}
