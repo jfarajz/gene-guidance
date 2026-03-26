@@ -103,12 +103,14 @@ export function DocumentsScreen() {
       >
         {printAll ? (
           <>
-            <ClinicalNoteDocument state={order} />
+            <div className="print-page-after">
+              <ClinicalNoteDocument state={order} />
+            </div>
             <div className="page-break my-8 border-t-2 border-dashed border-border print:hidden" />
-            <div className="print-page-break" />
-            <RequisitionDocument state={order} orderNumber={orderNum} />
+            <div className="print-page-after">
+              <RequisitionDocument state={order} orderNumber={orderNum} />
+            </div>
             <div className="page-break my-8 border-t-2 border-dashed border-border print:hidden" />
-            <div className="print-page-break" />
             <LMNDocument state={order} />
           </>
         ) : (
