@@ -1,11 +1,11 @@
-import { useOrder } from '@/context/OrderContext';
-import { DEMO_COMPLETE, DEMO_INTERACTIVE } from '@/data/demo';
+import { useOrder } from "@/context/OrderContext";
+import { DEMO_COMPLETE, DEMO_INTERACTIVE } from "@/data/demo";
 
-const STEPS = ['Provider', 'Patient', 'Clinical', 'Review', 'Documents'];
+const STEPS = ["Provider", "Patient", "Clinical", "Review", "Documents"];
 
 function formatDisplayDate(d: string): string {
-  if (!d) return '';
-  const parts = d.split('-');
+  if (!d) return "";
+  const parts = d.split("-");
   if (parts.length === 3) return `${parts[1]}/${parts[2]}/${parts[0]}`;
   return d;
 }
@@ -38,7 +38,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               Load demo (interactive)
             </button>
           </div>
-          <span className="hidden md:inline text-primary-foreground text-sm">Dr. Saeid Karandish · NPI 1528419710</span>
+          <span className="hidden md:inline text-primary-foreground text-sm">
+            {order.provider.name ? `${order.provider.name} · NPI ${order.provider.npi}` : ""}
+          </span>
         </div>
       </header>
 
@@ -48,7 +50,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {STEPS.map((_, i) => (
             <div
               key={i}
-              className={`flex-1 h-1 rounded-full transition-colors ${i <= currentStep ? 'bg-primary' : 'bg-border'}`}
+              className={`flex-1 h-1 rounded-full transition-colors ${i <= currentStep ? "bg-primary" : "bg-border"}`}
             />
           ))}
         </div>
@@ -59,8 +61,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               onClick={() => i < currentStep && setStep(i)}
               disabled={i >= currentStep && i !== currentStep}
               className={`flex-1 text-xs text-center transition-colors ${
-                i === currentStep ? 'text-primary font-medium' : 'text-text-tertiary'
-              } ${i < currentStep ? 'cursor-pointer hover:text-primary' : 'cursor-default'}`}
+                i === currentStep ? "text-primary font-medium" : "text-text-tertiary"
+              } ${i < currentStep ? "cursor-pointer hover:text-primary" : "cursor-default"}`}
             >
               {label}
             </button>
@@ -72,15 +74,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {hasPatient && currentStep >= 1 && (
         <div className="no-print max-w-[1000px] mx-auto px-4 sm:px-6 pb-2">
           <p className="text-sm text-text-secondary">
-            {patient.firstName} {patient.lastName} · DOB {formatDisplayDate(patient.dob)} · {order.insurance.type || 'No insurance'}
+            {patient.firstName} {patient.lastName} · DOB {formatDisplayDate(patient.dob)} ·{" "}
+            {order.insurance.type || "No insurance"}
           </p>
         </div>
       )}
 
       {/* Content */}
-      <main className="max-w-[1000px] mx-auto px-4 sm:px-6 pb-12 overflow-x-hidden">
-        {children}
-      </main>
+      <main className="max-w-[1000px] mx-auto px-4 sm:px-6 pb-12 overflow-x-hidden">{children}</main>
     </div>
   );
 }
