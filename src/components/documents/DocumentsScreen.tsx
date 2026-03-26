@@ -1,9 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useOrder } from '@/context/OrderContext';
 import { ClinicalNoteDocument } from '@/components/documents/ClinicalNoteDocument';
 import { RequisitionDocument } from '@/components/documents/RequisitionDocument';
 import { LMNDocument } from '@/components/documents/LMNDocument';
-import { Printer, Loader2 } from 'lucide-react';
+import { Printer, Download, Loader2 } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 
 type DocTab = 'note' | 'requisition' | 'lmn';
 
