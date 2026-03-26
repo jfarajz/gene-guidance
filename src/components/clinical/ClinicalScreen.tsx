@@ -1,14 +1,21 @@
-import { useOrder } from '@/context/OrderContext';
-import { DiagnosisPanel } from '@/components/clinical/DiagnosisPanel';
-import { MedicationPanel } from '@/components/clinical/MedicationPanel';
-import { QualificationDashboard } from '@/components/clinical/QualificationDashboard';
+import { useOrder } from "@/context/OrderContext";
+import { DiagnosisPanel } from "@/components/clinical/DiagnosisPanel";
+import { MedicationPanel } from "@/components/clinical/MedicationPanel";
+import { QualificationDashboard } from "@/components/clinical/QualificationDashboard";
 
 export function ClinicalScreen() {
   const { order, setStep } = useOrder();
   const { patient, insurance, qualification, diagnoses, medications } = order;
   const hasDx = diagnoses.length > 0;
-  const hasBillableMed = medications.some(m => m.isBillable);
+  const hasBillableMed = medications.some((m) => m.isBillable);
   const canContinue = hasDx && hasBillableMed;
+
+  const formatDob = (d: string) => {
+    if (!d) return "";
+    const parts = d.split("-");
+    if (parts.length === 3) return `${parts[1]}/${parts[2]}/${parts[0]}`;
+    return d;
+  };
 
   return (
     <div className="py-6">
@@ -16,7 +23,7 @@ export function ClinicalScreen() {
       <h1 className="text-2xl font-semibold text-foreground">Diagnoses & medications</h1>
       {patient.firstName && (
         <p className="text-sm text-text-secondary mt-1">
-          {patient.firstName} {patient.lastName} · DOB {patient.dob} · {insurance.type || 'No insurance'}
+          {patient.firstName} {patient.lastName} · DOB {formatDob(patient.dob)} · {insurance.type || "No insurance"}
         </p>
       )}
 
@@ -41,10 +48,10 @@ export function ClinicalScreen() {
           {!canContinue && (
             <span className="text-xs text-muted-foreground">
               {!hasDx && !hasBillableMed
-                ? 'Add at least one diagnosis and one billable medication'
+                ? "Add at least one diagnosis and one billable medication"
                 : !hasDx
-                ? 'Add at least one diagnosis'
-                : 'Add at least one billable medication'}
+                  ? "Add at least one diagnosis"
+                  : "Add at least one billable medication"}
             </span>
           )}
           <button
@@ -52,8 +59,8 @@ export function ClinicalScreen() {
             disabled={!canContinue}
             className={`h-10 px-5 rounded-lg text-primary-foreground text-sm font-medium transition-colors ${
               canContinue
-                ? 'bg-primary hover:bg-primary-hover cursor-pointer'
-                : 'bg-primary opacity-50 cursor-not-allowed'
+                ? "bg-primary hover:bg-primary-hover cursor-pointer"
+                : "bg-primary opacity-50 cursor-not-allowed"
             }`}
           >
             Review & generate documents →
