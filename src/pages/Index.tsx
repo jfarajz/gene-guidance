@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import { OrderProvider, useOrder } from '@/context/OrderContext';
 import { AppShell } from '@/components/AppShell';
 import { ProviderScreen } from '@/components/ProviderScreen';
@@ -8,15 +9,37 @@ import { DocumentsScreen } from '@/components/documents/DocumentsScreen';
 
 function WizardRouter() {
   const { order } = useOrder();
+  const [prevStep, setPrevStep] = useState(order.currentStep);
+  const [direction, setDirection] = useState<'forward' | 'back'>('forward');
+  const [animKey, setAnimKey] = useState(0);
 
-  switch (order.currentStep) {
-    case 0: return <ProviderScreen />;
-    case 1: return <PatientScreen />;
-    case 2: return <ClinicalScreen />;
-    case 3: return <ReviewScreen />;
-    case 4: return <DocumentsScreen />;
-    default: return null;
-  }
+  useEffect(() => {
+    if (order.currentStep !== prevStep) {
+      setDirection(order.currentStep > prevStep ? 'forward' : 'back');
+      setPrevStep(order.currentStep);
+      setAnimKey(k => k + 1);
+    }
+  }, [order.currentStep, prevStep]);
+
+  const content = (() => {
+    switch (order.currentStep) {
+      case 0: return <ProviderScreen />;
+      case 1: return <PatientScreen />;
+      case 2: return <ClinicalScreen />;
+      case 3: return <ReviewScreen />;
+      case 4: return <DocumentsScreen />;
+      default: return null;
+    }
+  })();
+
+  return (
+    <div
+      key={animKey}
+      className={direction === 'forward' ? 'animate-slide-in-left' : 'animate-slide-in-right'}
+    >
+      {content}
+    </div>
+  );
 }
 
 export default function Index() {

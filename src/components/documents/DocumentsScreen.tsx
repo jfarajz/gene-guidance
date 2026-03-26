@@ -3,7 +3,7 @@ import { useOrder } from '@/context/OrderContext';
 import { ClinicalNoteDocument } from '@/components/documents/ClinicalNoteDocument';
 import { RequisitionDocument } from '@/components/documents/RequisitionDocument';
 import { LMNDocument } from '@/components/documents/LMNDocument';
-import { Printer } from 'lucide-react';
+import { Printer, Loader2 } from 'lucide-react';
 
 type DocTab = 'note' | 'requisition' | 'lmn';
 
@@ -17,10 +17,16 @@ export function DocumentsScreen() {
   const { order, setStep, resetOrder } = useOrder();
   const [activeTab, setActiveTab] = useState<DocTab>('note');
   const [printAll, setPrintAll] = useState(false);
+  const [loading, setLoading] = useState(true);
   const orderNumRef = useRef(
     order.orderNumber || 'FRP-' + Math.floor(1000000 + Math.random() * 9000000).toString()
   );
   const orderNum = orderNumRef.current;
+
+  // Loading state
+  useState(() => {
+    setTimeout(() => setLoading(false), 300);
+  });
 
   const handlePrint = () => {
     setPrintAll(false);
@@ -37,6 +43,15 @@ export function DocumentsScreen() {
     setStep(0);
   };
 
+  if (loading) {
+    return (
+      <div className="py-8 flex flex-col items-center justify-center" style={{ minHeight: '400px' }}>
+        <Loader2 size={32} className="text-primary animate-spin mb-4" />
+        <p className="text-sm text-muted-foreground">Generating documents...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="py-8">
       {/* Title */}
@@ -46,14 +61,14 @@ export function DocumentsScreen() {
       </div>
 
       {/* Action bar */}
-      <div className="no-print flex items-center justify-between py-3 mb-4">
+      <div className="no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 py-3 mb-4">
         {/* Tabs */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 overflow-x-auto">
           {TABS.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+              className={`px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors ${
                 activeTab === tab.key
                   ? 'bg-card border border-border font-medium text-foreground shadow-sm'
                   : 'bg-surface text-muted-foreground hover:text-text-secondary cursor-pointer'
@@ -83,7 +98,7 @@ export function DocumentsScreen() {
       </div>
 
       {/* Document viewer */}
-      <div className="document-viewer bg-card rounded-xl border border-border p-8 max-w-[800px] mx-auto mb-6"
+      <div className="document-viewer bg-card rounded-xl border border-border p-4 sm:p-8 max-w-[800px] mx-auto mb-6"
         style={{ minHeight: printAll ? 'auto' : '900px' }}
       >
         {printAll ? (

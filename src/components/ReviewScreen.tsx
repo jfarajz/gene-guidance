@@ -71,7 +71,7 @@ export function ReviewScreen() {
       <div className="flex flex-col gap-4">
         {/* Card 1: Provider */}
         <Section title="Provider" editStep={0}>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
             <Field label="Provider" value={prov.name} />
             <Field label="NPI" value={prov.npi} />
             <Field label="Facility" value={prov.facilityName} />
@@ -81,7 +81,7 @@ export function ReviewScreen() {
 
         {/* Card 2: Patient */}
         <Section title="Patient" editStep={1}>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
             <Field label="Name" value={`${pat.firstName} ${pat.lastName}`} />
             <Field label="DOB" value={formatDate(pat.dob)} />
             <Field label="Gender" value={pat.gender} />
@@ -94,7 +94,7 @@ export function ReviewScreen() {
 
         {/* Card 3: Insurance */}
         <Section title="Insurance" editStep={1}>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
             <Field label="Type" value={ins.type} />
             <Field label="Provider" value={ins.provider} />
             <Field label="Policy ID" value={ins.policyId} />
@@ -105,7 +105,7 @@ export function ReviewScreen() {
 
         {/* Card 4: Specimen */}
         <Section title="Specimen" editStep={1}>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Field label="Collection date" value={formatDate(col.date)} />
             <Field label="Collection time" value={col.time} />
             <Field label="Method" value={col.method} />
@@ -150,7 +150,7 @@ export function ReviewScreen() {
 
           {/* Qualification mini-dashboard */}
           <div className="pt-3 border-t border-border">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
               {(['CYP2C19', 'CYP2D6', 'CYP2C9'] as const).map(gene => {
                 const g = qual.genes[gene];
                 const ok = g.qualified;
@@ -175,7 +175,7 @@ export function ReviewScreen() {
         {/* Card 6: Order Summary */}
         <div className="bg-surface rounded-xl border border-border border-l-4 border-l-primary p-5">
           <h3 className="text-base font-semibold text-foreground mb-3">Order summary</h3>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
             <Field label="Order #" value={orderNum} />
             <Field label="Date of service" value={formatDate(col.date)} />
             <Field label="Panel" value="Comprehensive Metabolic PGx Panel (36 genes)" />
