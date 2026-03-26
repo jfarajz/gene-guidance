@@ -41,6 +41,10 @@ export function ProviderScreen() {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && isValid) setStep(1);
+  };
+
   const isValid = p.npi && p.name && p.facilityName && p.address && p.city && p.state && p.zip;
 
   const inputCls = (flash = true) =>
@@ -49,7 +53,7 @@ export function ProviderScreen() {
     }`;
 
   return (
-    <div className="py-8">
+    <div className="py-8" onKeyDown={handleKeyDown}>
       <div className="max-w-lg mx-auto bg-card rounded-xl border border-border p-6">
         <h2 className="text-xl font-semibold text-foreground mb-6">Provider information</h2>
 
@@ -75,71 +79,37 @@ export function ProviderScreen() {
         {/* Provider name */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-foreground mb-1.5">Provider name <span className="text-destructive">*</span></label>
-          <input
-            type="text"
-            value={p.name}
-            onChange={e => updateProvider({ ...p, name: e.target.value })}
-            placeholder="Full name"
-            className={inputCls()}
-          />
+          <input type="text" value={p.name} onChange={e => updateProvider({ ...p, name: e.target.value })} placeholder="Full name" className={inputCls()} />
         </div>
 
         {/* Facility name */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-foreground mb-1.5">Facility name <span className="text-destructive">*</span></label>
-          <input
-            type="text"
-            value={p.facilityName}
-            onChange={e => updateProvider({ ...p, facilityName: e.target.value })}
-            placeholder="Facility name"
-            className={inputCls()}
-          />
+          <input type="text" value={p.facilityName} onChange={e => updateProvider({ ...p, facilityName: e.target.value })} placeholder="Facility name" className={inputCls()} />
         </div>
 
         {/* Address */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-foreground mb-1.5">Address <span className="text-destructive">*</span></label>
-          <input
-            type="text"
-            value={p.address}
-            onChange={e => updateProvider({ ...p, address: e.target.value })}
-            placeholder="Street address"
-            className={inputCls()}
-          />
+          <input type="text" value={p.address} onChange={e => updateProvider({ ...p, address: e.target.value })} placeholder="Street address" className={inputCls()} />
         </div>
 
         {/* City / State / Zip */}
-        <div className="grid grid-cols-[1fr_auto_auto] gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] gap-3 mb-6">
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">City <span className="text-destructive">*</span></label>
-            <input
-              type="text"
-              value={p.city}
-              onChange={e => updateProvider({ ...p, city: e.target.value })}
-              placeholder="City"
-              className={inputCls()}
-            />
+            <input type="text" value={p.city} onChange={e => updateProvider({ ...p, city: e.target.value })} placeholder="City" className={inputCls()} />
           </div>
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">State <span className="text-destructive">*</span></label>
-            <select
-              value={p.state}
-              onChange={e => updateProvider({ ...p, state: e.target.value })}
-              className={`${inputCls()} w-[80px] appearance-none cursor-pointer`}
-            >
+            <select value={p.state} onChange={e => updateProvider({ ...p, state: e.target.value })} className={`${inputCls()} w-full sm:w-[80px] appearance-none cursor-pointer`}>
               <option value="">—</option>
               {US_STATES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">Zip <span className="text-destructive">*</span></label>
-            <input
-              type="text"
-              value={p.zip}
-              onChange={e => updateProvider({ ...p, zip: e.target.value })}
-              placeholder="Zip"
-              className={`${inputCls()} w-[100px]`}
-            />
+            <input type="text" value={p.zip} onChange={e => updateProvider({ ...p, zip: e.target.value })} placeholder="Zip" className={`${inputCls()} w-full sm:w-[100px]`} />
           </div>
         </div>
 

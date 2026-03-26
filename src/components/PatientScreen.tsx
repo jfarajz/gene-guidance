@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useOrder } from '@/context/OrderContext';
 
 const US_STATES = [
@@ -33,8 +33,49 @@ function PillRadio({ options, value, onChange }: { options: string[]; value: str
   );
 }
 
-const inputCls = 'w-full h-10 rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors';
 const labelCls = 'block text-sm font-medium text-foreground mb-1.5';
+
+function ValidatedInput({ value, onChange, required = false, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { required?: boolean; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+  const [touched, setTouched] = useState(false);
+  const showError = required && touched && !value;
+  return (
+    <div>
+      <input
+        {...props}
+        value={value}
+        onChange={onChange}
+        onBlur={() => setTouched(true)}
+        className={`w-full h-10 rounded-lg border px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors bg-background ${
+          showError ? 'border-destructive' : 'border-input'
+        }`}
+      />
+      {showError && <p className="text-xs text-destructive mt-1">Required</p>}
+    </div>
+  );
+}
+
+function ValidatedSelect({ value, onChange, required = false, children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement> & { required?: boolean; value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void }) {
+  const [touched, setTouched] = useState(false);
+  const showError = required && touched && !value;
+  return (
+    <div>
+      <select
+        {...props}
+        value={value}
+        onChange={onChange}
+        onBlur={() => setTouched(true)}
+        className={`w-full h-10 rounded-lg border px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors bg-background appearance-none cursor-pointer ${
+          showError ? 'border-destructive' : 'border-input'
+        }`}
+      >
+        {children}
+      </select>
+      {showError && <p className="text-xs text-destructive mt-1">Required</p>}
+    </div>
+  );
+}
+
+const inputCls = 'w-full h-10 rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors';
 
 export function PatientScreen() {
   const { order, updatePatient, updateInsurance, updateCollection, setStep } = useOrder();
@@ -65,25 +106,29 @@ export function PatientScreen() {
   const colValid = col.date && col.time && col.method;
   const canContinue = patientValid && insValid && colValid;
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && canContinue) setStep(2);
+  };
+
   return (
-    <div className="py-8 flex flex-col gap-6">
+    <div className="py-8 flex flex-col gap-6" onKeyDown={handleKeyDown}>
       {/* Card 1: Patient Information */}
       <div className="bg-card rounded-xl border border-border p-6">
         <h3 className="text-lg font-semibold text-foreground mb-4">Patient information</h3>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
           {/* Left column */}
           <div className="flex flex-col gap-3">
             <div>
               <label className={labelCls}>First name <span className="text-destructive">*</span></label>
-              <input type="text" value={pat.firstName} onChange={e => updatePatient({ ...pat, firstName: e.target.value })} placeholder="First name" className={inputCls} />
+              <ValidatedInput required type="text" value={pat.firstName} onChange={e => updatePatient({ ...pat, firstName: e.target.value })} placeholder="First name" />
             </div>
             <div>
               <label className={labelCls}>Last name <span className="text-destructive">*</span></label>
-              <input type="text" value={pat.lastName} onChange={e => updatePatient({ ...pat, lastName: e.target.value })} placeholder="Last name" className={inputCls} />
+              <ValidatedInput required type="text" value={pat.lastName} onChange={e => updatePatient({ ...pat, lastName: e.target.value })} placeholder="Last name" />
             </div>
             <div>
               <label className={labelCls}>Date of birth <span className="text-destructive">*</span></label>
-              <input type="date" value={pat.dob} onChange={e => updatePatient({ ...pat, dob: e.target.value })} className={inputCls} />
+              <ValidatedInput required type="date" value={pat.dob} onChange={e => updatePatient({ ...pat, dob: e.target.value })} />
             </div>
             <div>
               <label className={labelCls}>Gender <span className="text-destructive">*</span></label>
@@ -102,7 +147,7 @@ export function PatientScreen() {
           <div className="flex flex-col gap-3">
             <div>
               <label className={labelCls}>Address 1 <span className="text-destructive">*</span></label>
-              <input type="text" value={pat.address1} onChange={e => updatePatient({ ...pat, address1: e.target.value })} placeholder="Street address" className={inputCls} />
+              <ValidatedInput required type="text" value={pat.address1} onChange={e => updatePatient({ ...pat, address1: e.target.value })} placeholder="Street address" />
             </div>
             <div>
               <label className={labelCls}>Address 2</label>
@@ -110,26 +155,26 @@ export function PatientScreen() {
             </div>
             <div>
               <label className={labelCls}>City <span className="text-destructive">*</span></label>
-              <input type="text" value={pat.city} onChange={e => updatePatient({ ...pat, city: e.target.value })} placeholder="City" className={inputCls} />
+              <ValidatedInput required type="text" value={pat.city} onChange={e => updatePatient({ ...pat, city: e.target.value })} placeholder="City" />
             </div>
             <div>
               <label className={labelCls}>State <span className="text-destructive">*</span></label>
-              <select value={pat.state} onChange={e => updatePatient({ ...pat, state: e.target.value })} className={`${inputCls} appearance-none cursor-pointer`}>
+              <ValidatedSelect required value={pat.state} onChange={e => updatePatient({ ...pat, state: e.target.value })}>
                 <option value="">Select...</option>
                 {US_STATES.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
+              </ValidatedSelect>
             </div>
             <div>
               <label className={labelCls}>Zip <span className="text-destructive">*</span></label>
-              <input type="text" value={pat.zip} onChange={e => updatePatient({ ...pat, zip: e.target.value })} placeholder="Zip code" className={inputCls} />
+              <ValidatedInput required type="text" value={pat.zip} onChange={e => updatePatient({ ...pat, zip: e.target.value })} placeholder="Zip code" />
             </div>
             <div>
               <label className={labelCls}>Phone <span className="text-destructive">*</span></label>
-              <input type="tel" value={pat.phone} onChange={e => updatePatient({ ...pat, phone: e.target.value })} placeholder="(555) 555-0000" className={inputCls} />
+              <ValidatedInput required type="tel" value={pat.phone} onChange={e => updatePatient({ ...pat, phone: e.target.value })} placeholder="(555) 555-0000" />
             </div>
             <div>
               <label className={labelCls}>Email <span className="text-destructive">*</span></label>
-              <input type="email" value={pat.email} onChange={e => updatePatient({ ...pat, email: e.target.value })} placeholder="patient@email.com" className={inputCls} />
+              <ValidatedInput required type="email" value={pat.email} onChange={e => updatePatient({ ...pat, email: e.target.value })} placeholder="patient@email.com" />
             </div>
           </div>
         </div>
@@ -151,10 +196,10 @@ export function PatientScreen() {
             <label className={labelCls}>Primary insurance provider</label>
             <input type="text" value={ins.provider} onChange={e => updateInsurance({ ...ins, provider: e.target.value })} placeholder="Insurance provider" className={inputCls} />
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className={labelCls}>Policy ID <span className="text-destructive">*</span></label>
-              <input type="text" value={ins.policyId} onChange={e => updateInsurance({ ...ins, policyId: e.target.value })} placeholder="Policy ID" className={inputCls} />
+              <ValidatedInput required type="text" value={ins.policyId} onChange={e => updateInsurance({ ...ins, policyId: e.target.value })} placeholder="Policy ID" />
             </div>
             <div>
               <label className={labelCls}>Group ID</label>
@@ -171,7 +216,7 @@ export function PatientScreen() {
       {/* Card 3: Specimen Information */}
       <div className="bg-card rounded-xl border border-border p-6">
         <h3 className="text-lg font-semibold text-foreground mb-4">Specimen information</h3>
-        <div className="grid grid-cols-3 gap-4 items-end">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
           <div>
             <label className={labelCls}>Date of collection <span className="text-destructive">*</span></label>
             <input type="date" value={col.date} onChange={e => updateCollection({ ...col, date: e.target.value })} className={inputCls} />

@@ -5,8 +5,10 @@ import { QualificationDashboard } from '@/components/clinical/QualificationDashb
 
 export function ClinicalScreen() {
   const { order, setStep } = useOrder();
-  const { patient, insurance, qualification } = order;
-  const hasQualified = qualification.billableCPTs.length > 0;
+  const { patient, insurance, qualification, diagnoses, medications } = order;
+  const hasDx = diagnoses.length > 0;
+  const hasBillableMed = medications.some(m => m.isBillable);
+  const canContinue = hasDx && hasBillableMed;
 
   return (
     <div className="py-6">
@@ -28,24 +30,35 @@ export function ClinicalScreen() {
       <QualificationDashboard />
 
       {/* Navigation */}
-      <div className="flex justify-between mt-6 mb-8">
+      <div className="flex justify-between items-center mt-6 mb-8">
         <button
           onClick={() => setStep(1)}
           className="h-10 px-5 rounded-lg border border-border bg-card text-text-secondary text-sm hover:bg-muted transition-colors"
         >
           Back
         </button>
-        <button
-          onClick={() => hasQualified && setStep(3)}
-          disabled={!hasQualified}
-          className={`h-10 px-5 rounded-lg text-primary-foreground text-sm font-medium transition-colors ${
-            hasQualified
-              ? 'bg-primary hover:bg-primary-hover cursor-pointer'
-              : 'bg-primary opacity-50 cursor-not-allowed'
-          }`}
-        >
-          Review & generate documents →
-        </button>
+        <div className="flex items-center gap-3">
+          {!canContinue && (
+            <span className="text-xs text-muted-foreground">
+              {!hasDx && !hasBillableMed
+                ? 'Add at least one diagnosis and one billable medication'
+                : !hasDx
+                ? 'Add at least one diagnosis'
+                : 'Add at least one billable medication'}
+            </span>
+          )}
+          <button
+            onClick={() => canContinue && setStep(3)}
+            disabled={!canContinue}
+            className={`h-10 px-5 rounded-lg text-primary-foreground text-sm font-medium transition-colors ${
+              canContinue
+                ? 'bg-primary hover:bg-primary-hover cursor-pointer'
+                : 'bg-primary opacity-50 cursor-not-allowed'
+            }`}
+          >
+            Review & generate documents →
+          </button>
+        </div>
       </div>
     </div>
   );
