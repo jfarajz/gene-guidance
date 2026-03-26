@@ -127,8 +127,16 @@ export function DocumentsScreen() {
           ))}
         </div>
 
-        {/* Print buttons */}
-        <div className="flex gap-2">
+        {/* Action buttons */}
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={handleDownloadAll}
+            disabled={downloading}
+            className="h-10 px-4 rounded-lg border border-input bg-background text-foreground text-sm font-medium hover:bg-muted transition-colors inline-flex items-center gap-2 disabled:opacity-50"
+          >
+            {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+            Download all
+          </button>
           <button
             onClick={handlePrintAll}
             className="h-10 px-4 rounded-lg border border-input bg-background text-foreground text-sm font-medium hover:bg-muted transition-colors"
@@ -136,11 +144,12 @@ export function DocumentsScreen() {
             Print all
           </button>
           <button
-            onClick={handlePrint}
-            className="h-10 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors inline-flex items-center gap-2"
+            onClick={handleDownload}
+            disabled={downloading}
+            className="h-10 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors inline-flex items-center gap-2 disabled:opacity-50"
           >
-            <Printer size={16} />
-            Print / Save as PDF
+            {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+            Download PDF
           </button>
         </div>
       </div>
