@@ -116,3 +116,29 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media print {
+  nav, header, .no-print, .stepper, .tab-bar, .action-bar {
+    display: none !important;
+  }
+  button {
+    display: none !important;
+  }
+  .document-viewer {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    border-radius: 0 !important;
+  }
+  .print-page-break {
+    page-break-before: always;
+  }
+  @page {
+    margin: 0.75in;
+  }
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
