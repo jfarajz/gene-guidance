@@ -134,6 +134,12 @@
   .print-page-break {
     page-break-before: always;
   }
+  .print-page-after {
+    page-break-after: always;
+  }
+  .print-no-break {
+    page-break-inside: avoid;
+  }
   @page {
     margin: 0.75in;
   }

@@ -17,14 +17,14 @@ const sharedBase: Omit<OrderState, 'medications' | 'qualification'> = {
     npi: "1528419710",
     name: "Dr. Saeid Karandish",
     facilityName: "Firmalab Bio-Diagnostics",
-    address: "10801 National Blvd Ste 370",
-    city: "Los Angeles",
+    address: "16661 Ventura Boulevard Suite 313",
+    city: "Encino",
     state: "CA",
-    zip: "90064"
+    zip: "91436"
   },
   patient: {
     firstName: "Fatemeh",
-    lastName: "Tahmasb",
+    lastName: "K. Tahmasb",
     dob: "1939-12-14",
     gender: "Female",
     ethnicity: "Other",

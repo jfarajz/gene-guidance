@@ -21,16 +21,19 @@ export function RequisitionDocument({ state, orderNumber }: { state: OrderState;
   return (
     <div className="font-sans text-[11px] leading-tight print-document">
       {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-4 print-no-break">
         <div>
           <div className="text-xl font-bold tracking-wide text-foreground">FIRMALAB</div>
           <div className="text-[9px] tracking-[0.2em] text-muted-foreground">BIO-DIAGNOSTICS</div>
+          <div className="text-[9px] text-muted-foreground mt-1">870 Vine St. Los Angeles, CA 90038</div>
+          <div className="text-[9px] text-muted-foreground">Dr. Emeka Ajemba, MD</div>
+          <div className="text-[9px] text-muted-foreground">CLIA#: 05D0992853</div>
         </div>
         <div className="text-right font-mono text-sm text-muted-foreground">{orderNumber}</div>
       </div>
 
       {/* Two-column top */}
-      <div className="grid grid-cols-2 gap-3 mb-4">
+      <div className="grid grid-cols-2 gap-3 mb-4 print-no-break">
         {/* Patient box */}
         <div className="border border-border rounded overflow-hidden">
           <div className="bg-[hsl(210,90%,94%)] px-2 py-1 font-semibold text-foreground text-xs">Patient</div>
@@ -66,7 +69,7 @@ export function RequisitionDocument({ state, orderNumber }: { state: OrderState;
       </div>
 
       {/* Medications Table */}
-      <div className="mb-4">
+      <div className="mb-4 print-no-break">
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-primary text-primary-foreground text-[10px]">
@@ -124,7 +127,7 @@ export function RequisitionDocument({ state, orderNumber }: { state: OrderState;
       </div>
 
       {/* Tests Section */}
-      <div className="mb-4">
+      <div className="mb-4 print-no-break">
         <div className="text-xs font-semibold text-foreground mb-2">Comprehensive Metabolic PGx Panel</div>
         <div className="grid grid-cols-3 gap-1 font-mono text-[10px]">
           {PANEL_GENES.map(g => (
@@ -158,7 +161,7 @@ export function RequisitionDocument({ state, orderNumber }: { state: OrderState;
       </div>
 
       {/* Signatures */}
-      <div className="grid grid-cols-2 gap-6 mb-4">
+      <div className="grid grid-cols-2 gap-6 mb-4 print-no-break">
         <div>
           <div className="text-[10px] text-muted-foreground mb-1">I attest that the above genetic testing is medically necessary for this patient.</div>
           <div className="border-b border-foreground h-8 mb-1" />
