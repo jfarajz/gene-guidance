@@ -14,11 +14,19 @@ const TABS: { key: DocTab; label: string }[] = [
   { key: 'lmn', label: 'Medical necessity letter' },
 ];
 
+const DOC_NAMES: Record<DocTab, string> = {
+  note: 'Clinical-Note',
+  requisition: 'Requisition',
+  lmn: 'Medical-Necessity-Letter',
+};
+
 export function DocumentsScreen() {
   const { order, setStep, resetOrder } = useOrder();
   const [activeTab, setActiveTab] = useState<DocTab>('note');
   const [printAll, setPrintAll] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
+  const docRef = useRef<HTMLDivElement>(null);
   const orderNumRef = useRef(
     order.orderNumber || 'FRP-' + Math.floor(1000000 + Math.random() * 9000000).toString()
   );
@@ -28,6 +36,45 @@ export function DocumentsScreen() {
   useState(() => {
     setTimeout(() => setLoading(false), 300);
   });
+
+  const getPdfOptions = useCallback((filename: string) => ({
+    margin: [0.5, 0.5, 0.5, 0.5],
+    filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' as const },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+  }), []);
+
+  const handleDownload = useCallback(async () => {
+    if (!docRef.current || downloading) return;
+    setDownloading(true);
+    try {
+      const patientName = `${order.patient.lastName || 'Patient'}`.replace(/\s+/g, '-');
+      const filename = `${DOC_NAMES[activeTab]}_${patientName}_${orderNum}.pdf`;
+      await html2pdf().set(getPdfOptions(filename)).from(docRef.current).save();
+    } finally {
+      setDownloading(false);
+    }
+  }, [activeTab, order.patient.lastName, orderNum, downloading, getPdfOptions]);
+
+  const handleDownloadAll = useCallback(async () => {
+    if (!docRef.current || downloading) return;
+    setDownloading(true);
+    setPrintAll(true);
+    // Wait for React to render all docs
+    await new Promise(r => setTimeout(r, 200));
+    try {
+      const patientName = `${order.patient.lastName || 'Patient'}`.replace(/\s+/g, '-');
+      const filename = `All-Documents_${patientName}_${orderNum}.pdf`;
+      if (docRef.current) {
+        await html2pdf().set(getPdfOptions(filename)).from(docRef.current).save();
+      }
+    } finally {
+      setPrintAll(false);
+      setDownloading(false);
+    }
+  }, [order.patient.lastName, orderNum, downloading, getPdfOptions]);
 
   const handlePrint = () => {
     setPrintAll(false);
