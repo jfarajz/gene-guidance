@@ -1,10 +1,10 @@
 import { OrderProvider, useOrder } from '@/context/OrderContext';
 import { AppShell } from '@/components/AppShell';
-import { WizardStep } from '@/components/WizardStep';
 import { ProviderScreen } from '@/components/ProviderScreen';
 import { PatientScreen } from '@/components/PatientScreen';
 import { ClinicalScreen } from '@/components/clinical/ClinicalScreen';
 import { ReviewScreen } from '@/components/ReviewScreen';
+import { DocumentsScreen } from '@/components/documents/DocumentsScreen';
 
 function WizardRouter() {
   const { order } = useOrder();
@@ -14,7 +14,7 @@ function WizardRouter() {
     case 1: return <PatientScreen />;
     case 2: return <ClinicalScreen />;
     case 3: return <ReviewScreen />;
-    case 4: return <WizardStep title="Documents" />;
+    case 4: return <DocumentsScreen />;
     default: return null;
   }
 }
