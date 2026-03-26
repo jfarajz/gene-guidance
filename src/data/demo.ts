@@ -24,28 +24,28 @@ const sharedBase: Omit<OrderState, 'medications' | 'qualification'> = {
   patient: {
     firstName: "Fatemeh",
     lastName: "Tahmasb",
-    dob: "12/14/1939",
+    dob: "1939-12-14",
     gender: "Female",
-    ethnicity: "Middle Eastern",
+    ethnicity: "Other",
     address1: "22100 Burbank Blvd",
     address2: "",
     city: "Woodland Hills",
     state: "CA",
     zip: "91367",
     phone: "(818) 555-0147",
-    email: ""
+    email: "ftahmasb@email.com"
   },
   insurance: {
     type: "Medicare",
-    provider: "Medicare",
+    provider: "Medicare Part A and B",
     policyId: "6NE6J27AV78",
     groupId: "",
     phoneNumber: "",
     relationshipToInsured: "Self"
   },
   collection: {
-    date: "06/20/2025",
-    time: "2:00 PM",
+    date: "2025-06-20",
+    time: "14:00",
     method: "Buccal Swab"
   },
   diagnoses: [
