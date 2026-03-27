@@ -71,6 +71,11 @@ export default {
             bg: "hsl(var(--tier-red-bg))",
             border: "hsl(var(--tier-red-border))",
           },
+          purple: {
+            DEFAULT: "hsl(var(--tier-purple))",
+            bg: "hsl(var(--tier-purple-bg))",
+            border: "hsl(var(--tier-purple-border))",
+          },
         },
         gene: {
           badge: {

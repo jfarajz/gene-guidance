@@ -34,6 +34,39 @@ export const BILLABLE_GENES: Record<string, { cpt: string; medications: string[]
   }
 };
 
+export const TESTED_GENES: Record<string, { medications: string[] }> = {
+  SLCO1B1: {
+    medications: ["simvastatin","atorvastatin","fluvastatin","lovastatin","pitavastatin","pravastatin","rosuvastatin"]
+  },
+  CYP3A5: {
+    medications: ["tacrolimus"]
+  },
+  DPYD: {
+    medications: ["capecitabine","fluorouracil"]
+  },
+  NUDT15: {
+    medications: ["azathioprine","mercaptopurine","thioguanine"]
+  },
+  TPMT: {
+    medications: ["azathioprine","mercaptopurine","thioguanine"]
+  },
+  VKORC1: {
+    medications: ["warfarin"]
+  },
+  APOE: {
+    medications: ["lecanemab","donanemab"]
+  },
+  CYP2B6: {
+    medications: ["efavirenz","sertraline"]
+  },
+  ABCG2: {
+    medications: ["rosuvastatin"]
+  },
+  CYP4F2: {
+    medications: ["warfarin"]
+  }
+};
+
 export const ICD10_DATABASE: { code: string; description: string; tier: CoverageTier }[] = [
   // GREEN — 44 codes
   { code: "F20.0", description: "Paranoid schizophrenia", tier: "green" },
