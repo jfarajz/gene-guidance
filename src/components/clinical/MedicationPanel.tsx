@@ -155,23 +155,31 @@ export function MedicationPanel() {
         />
         {showDropdown && (results.length > 0 || showFreeText) && (
           <div className="absolute z-20 top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto">
-            {results.map(r => (
-              <button
-                key={r.generic}
-                onClick={() => handleSelect(r)}
-                className="w-full flex items-center justify-between px-3 py-2 hover:bg-muted transition-colors text-left"
-              >
-                <div className="flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full shrink-0 ${r.billable ? 'bg-primary' : 'bg-destructive'}`} />
-                  <span className="font-medium text-sm text-foreground">{r.generic}</span>
-                  <span className="text-text-tertiary text-sm">({r.brand})</span>
-                  <span className="text-xs text-text-tertiary">{r.class}</span>
-                </div>
-                {!r.billable && (
-                  <span className="text-xs text-destructive">No gene interaction</span>
-                )}
-              </button>
-            ))}
+            {results.map(r => {
+              const testedGs = getTestedGenes(r.generic);
+              const isTested = testedGs.length > 0;
+              return (
+                <button
+                  key={r.generic}
+                  onClick={() => handleSelect(r)}
+                  className="w-full flex items-center justify-between px-3 py-2 hover:bg-muted transition-colors text-left"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${
+                      r.billable ? 'bg-primary' : isTested ? 'border-2 border-tier-purple bg-transparent' : 'bg-destructive'
+                    }`} />
+                    <span className="font-medium text-sm text-foreground">{r.generic}</span>
+                    <span className="text-text-tertiary text-sm">({r.brand})</span>
+                    <span className="text-xs text-text-tertiary">{r.class}</span>
+                  </div>
+                  {r.billable ? null : isTested ? (
+                    <span className="text-[10px] text-tier-purple">Tested gene: {testedGs.join(', ')}</span>
+                  ) : (
+                    <span className="text-xs text-destructive">No gene interaction</span>
+                  )}
+                </button>
+              );
+            })}
             {showFreeText && (
               <button
                 onClick={handleFreeTextAdd}
@@ -205,17 +213,21 @@ export function MedicationPanel() {
 function MedRow({ med, onRemove }: { med: Medication; onRemove: () => void }) {
   const { order, updateMedication } = useOrder();
 
+  const rowStyle = med.isBillable
+    ? 'bg-card border-border'
+    : med.isTested
+      ? 'bg-tier-purple-bg border-tier-purple-border'
+      : 'bg-tier-red-bg border-tier-red-border';
+
   return (
-    <div className={`group rounded-lg px-3 py-2 border ${
-      med.isBillable ? 'bg-card border-border' : 'bg-tier-red-bg border-tier-red-border'
-    }`}>
+    <div className={`group rounded-lg px-3 py-2 border ${rowStyle}`}>
       {/* Top row: name + badges */}
       <div className="flex items-center gap-2">
         <div className="flex-1 min-w-0">
           <span className="font-medium text-sm text-foreground">{med.generic}</span>
         </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          {med.isBillable ? (
+        <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+          {med.isBillable && (
             <>
               {med.geneMatches.map(gm => (
                 <span key={gm.gene} className="bg-gene-badge-bg text-gene-badge-text text-[10px] px-1.5 py-0.5 rounded font-medium">
@@ -227,12 +239,24 @@ function MedRow({ med, onRemove }: { med: Medication; onRemove: () => void }) {
                   {gm.cpt}
                 </span>
               ))}
-              <Check size={14} className="text-tier-green" />
+            </>
+          )}
+          {med.testedGenes.length > 0 && med.testedGenes.map(g => (
+            <span key={g} className="bg-tier-purple-border text-tier-purple text-[10px] px-1.5 py-0.5 rounded font-medium">
+              {g}
+            </span>
+          ))}
+          {med.isBillable ? (
+            <Check size={14} className="text-tier-green" />
+          ) : med.isTested ? (
+            <>
+              <span className="text-[10px] text-tier-purple">Tested · not separately billable</span>
+              <Info size={14} className="text-tier-purple" />
             </>
           ) : (
             <>
               <span className="text-destructive bg-tier-red-bg border border-tier-red-border text-[10px] px-1.5 py-0.5 rounded font-medium">
-                Not in MolDx
+                No gene interaction
               </span>
               <AlertTriangle size={14} className="text-destructive" />
             </>
