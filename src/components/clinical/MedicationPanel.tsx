@@ -49,7 +49,7 @@ function getRecommendedDiagnosis(generic: string, diagnoses: Diagnosis[]): strin
 
 export function MedicationPanel() {
   const { order, addMedication, removeMedication } = useOrder();
-  const [activeTab, setActiveTab] = useState<'prescribed' | 'considered'>('prescribed');
+  
   const [search, setSearch] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [browserOpen, setBrowserOpen] = useState(false);
