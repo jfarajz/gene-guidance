@@ -16,7 +16,19 @@ export function ClinicalNoteDocument({ state }: { state: OrderState }) {
           return <div key={i} className="text-sm font-semibold mt-1">{line}</div>;
         }
         if (line.startsWith('___')) {
-          return <div key={i} className="border-t border-foreground mt-16 mb-2" />;
+          return (
+            <div key={i} className="mt-10">
+              {state.signatures.physician && (
+                <img
+                  src={state.signatures.physician}
+                  alt="Physician signature"
+                  className="h-16 object-contain max-w-[250px] mb-1"
+                  style={{ printColorAdjust: 'exact', WebkitPrintColorAdjust: 'exact' }}
+                />
+              )}
+              <div className="border-t border-foreground" />
+            </div>
+          );
         }
         if (line.startsWith('DR.')) {
           return <div key={i} className="font-semibold text-sm">{line}</div>;
