@@ -78,6 +78,62 @@ function ValidatedSelect({ value, onChange, required = false, children, ...props
 
 const inputCls = 'w-full h-10 rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors';
 
+function InsuranceCardUpload({ photo, side, sideLabel, onCapture, onRemove }: {
+  photo: string;
+  side: string;
+  sideLabel: string;
+  onCapture: (dataUrl: string) => void;
+  onRemove: () => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') onCapture(reader.result);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  return (
+    <div>
+      <input ref={inputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFile} />
+      {photo ? (
+        <div className="relative aspect-[8/5] rounded-lg overflow-hidden border border-border">
+          <img src={photo} alt={sideLabel} className="object-cover w-full h-full" />
+          <button
+            type="button"
+            onClick={onRemove}
+            className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-destructive text-white flex items-center justify-center cursor-pointer hover:bg-destructive/90"
+          >
+            <X size={12} />
+          </button>
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="absolute bottom-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-background/80 text-xs text-foreground border border-border cursor-pointer hover:bg-background flex items-center gap-1"
+          >
+            <RefreshCw size={10} /> Retake
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="w-full aspect-[8/5] rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors"
+        >
+          <Camera size={24} className="text-muted-foreground" />
+          <span className="text-xs text-muted-foreground">{side}</span>
+        </button>
+      )}
+      <p className="text-xs text-muted-foreground text-center mt-1">{sideLabel}</p>
+    </div>
+  );
+}
+
 export function PatientScreen() {
   const { order, updatePatient, updateInsurance, updateCollection, updateInsuranceCards, setStep } = useOrder();
   const pat = order.patient;
