@@ -1,4 +1,4 @@
-import { BILLABLE_GENES } from '@/data/constants';
+import { BILLABLE_GENES, TESTED_GENES } from '@/data/constants';
 import type { GeneMatch, Medication, Diagnosis, QualificationResult, Suggestion } from '@/types/order';
 
 export function getGeneMatches(genericName: string): GeneMatch[] {
@@ -7,6 +7,17 @@ export function getGeneMatches(genericName: string): GeneMatch[] {
   for (const [gene, data] of Object.entries(BILLABLE_GENES)) {
     if (data.medications.some(med => name === med || name.includes(med) || med.includes(name))) {
       matches.push({ gene: gene as GeneMatch['gene'], cpt: data.cpt as GeneMatch['cpt'] });
+    }
+  }
+  return matches;
+}
+
+export function getTestedGenes(genericName: string): string[] {
+  const name = genericName.toLowerCase().trim();
+  const matches: string[] = [];
+  for (const [gene, data] of Object.entries(TESTED_GENES)) {
+    if (data.medications.some(med => name === med || name.includes(med) || med.includes(name))) {
+      matches.push(gene);
     }
   }
   return matches;
