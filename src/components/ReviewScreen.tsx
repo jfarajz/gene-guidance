@@ -102,6 +102,22 @@ export function ReviewScreen() {
             <Field label="Group ID" value={ins.groupId} />
             <Field label="Relationship" value={ins.relationshipToInsured} />
           </div>
+          {(order.insuranceCards.front || order.insuranceCards.back) && (
+            <div className="flex items-start gap-3 mt-4 pt-3 border-t border-border">
+              {order.insuranceCards.front && (
+                <div>
+                  <img src={order.insuranceCards.front} alt="Card front" className="h-16 rounded object-cover" style={{ printColorAdjust: 'exact', WebkitPrintColorAdjust: 'exact' }} />
+                  <p className="text-xs text-muted-foreground mt-0.5">Card front</p>
+                </div>
+              )}
+              {order.insuranceCards.back && (
+                <div>
+                  <img src={order.insuranceCards.back} alt="Card back" className="h-16 rounded object-cover" style={{ printColorAdjust: 'exact', WebkitPrintColorAdjust: 'exact' }} />
+                  <p className="text-xs text-muted-foreground mt-0.5">Card back</p>
+                </div>
+              )}
+            </div>
+          )}
         </Section>
 
         {/* Card 4: Specimen */}
