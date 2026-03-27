@@ -164,15 +164,35 @@ export function RequisitionDocument({ state, orderNumber }: { state: OrderState;
       <div className="grid grid-cols-2 gap-6 mb-4 print-no-break">
         <div>
           <div className="text-[10px] text-muted-foreground mb-1">I attest that the above genetic testing is medically necessary for this patient.</div>
-          <div className="border-b border-foreground h-8 mb-1" />
+          {state.signatures?.physician ? (
+            <img
+              src={state.signatures.physician}
+              alt="Physician signature"
+              className="h-14 object-contain max-w-[200px] mb-1"
+              style={{ printColorAdjust: 'exact', WebkitPrintColorAdjust: 'exact' }}
+            />
+          ) : (
+            <div className="h-14" />
+          )}
+          <div className="border-b border-foreground mb-1" />
           <div className="text-[10px]">Physician Signature</div>
-          <div className="text-[10px] text-muted-foreground">Date: {formatDate(col.date)}</div>
+          <div className="text-[10px] text-muted-foreground">Date: {state.signatures?.physicianDate || formatDate(col.date)}</div>
         </div>
         <div>
           <div className="text-[10px] text-muted-foreground mb-1">I consent to the above genetic testing.</div>
-          <div className="border-b border-foreground h-8 mb-1" />
+          {state.signatures?.patient ? (
+            <img
+              src={state.signatures.patient}
+              alt="Patient signature"
+              className="h-14 object-contain max-w-[200px] mb-1"
+              style={{ printColorAdjust: 'exact', WebkitPrintColorAdjust: 'exact' }}
+            />
+          ) : (
+            <div className="h-14" />
+          )}
+          <div className="border-b border-foreground mb-1" />
           <div className="text-[10px]">Patient Signature</div>
-          <div className="text-[10px] text-muted-foreground">Date: _______________</div>
+          <div className="text-[10px] text-muted-foreground">Date: {state.signatures?.patientDate || '_______________'}</div>
         </div>
       </div>
 

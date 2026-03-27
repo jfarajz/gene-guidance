@@ -112,9 +112,19 @@ export function LMNDocument({ state }: { state: OrderState }) {
 
       {/* Signature */}
       <div className="mt-6 max-w-xs">
-        <div className="border-b border-foreground h-8 mb-1" />
+        {state.signatures?.physician ? (
+          <img
+            src={state.signatures.physician}
+            alt="Provider signature"
+            className="h-14 object-contain max-w-[200px] mb-1"
+            style={{ printColorAdjust: 'exact', WebkitPrintColorAdjust: 'exact' }}
+          />
+        ) : (
+          <div className="h-14" />
+        )}
+        <div className="border-b border-foreground mb-1" />
         <div className="text-[10px]">Provider Signature</div>
-        <div className="text-[10px] text-muted-foreground">Date: {formatDate(col.date)}</div>
+        <div className="text-[10px] text-muted-foreground">Date: {state.signatures?.physicianDate || formatDate(col.date)}</div>
       </div>
 
       {/* Footer */}

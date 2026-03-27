@@ -36,7 +36,7 @@ function TierBadge({ tier }: { tier: string }) {
 }
 
 export function ReviewScreen() {
-  const { order, setStep } = useOrder();
+  const { order, setStep, updateSignatures } = useOrder();
   const orderNumRef = useRef(order.orderNumber);
 
   useEffect(() => {
@@ -184,22 +184,77 @@ export function ReviewScreen() {
             <Field label="Panel code" value={qual.panelEligible ? '81418 (Panel eligible)' : qual.billableCPTs.join(', ') || 'Individual CPTs'} />
           </div>
         </div>
+        {/* Card 7: Signatures */}
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h3 className="text-base font-semibold text-foreground">Signatures</h3>
+          <p className="text-xs text-muted-foreground mb-4">
+            Physician signature is required to generate documents. Patient signature is optional and can be collected at the time of specimen collection.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Physician */}
+            <div>
+              <SignaturePad
+                label="Physician signature *"
+                value={order.signatures.physician}
+                onChange={(dataUrl) => {
+                  const today = new Date().toLocaleDateString('en-US');
+                  updateSignatures({
+                    physician: dataUrl,
+                    physicianDate: dataUrl ? today : '',
+                  });
+                }}
+              />
+              {order.signatures.physicianDate && (
+                <div className="text-xs text-muted-foreground mt-1">Signed: {order.signatures.physicianDate}</div>
+              )}
+              <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
+                The results of this test are medically necessary for the diagnosis, risk assessment, or detection of illness, disease, symptom, disorder, or syndrome. This test will produce results that will support the management and treatment decisions for my patient's condition.
+              </p>
+            </div>
+            {/* Patient */}
+            <div>
+              <SignaturePad
+                label="Patient signature (optional)"
+                value={order.signatures.patient}
+                onChange={(dataUrl) => {
+                  const today = new Date().toLocaleDateString('en-US');
+                  updateSignatures({
+                    patient: dataUrl,
+                    patientDate: dataUrl ? today : '',
+                  });
+                }}
+              />
+              {order.signatures.patientDate && (
+                <div className="text-xs text-muted-foreground mt-1">Signed: {order.signatures.patientDate}</div>
+              )}
+              <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
+                I hereby declare that I am seeking laboratory testing willingly, and consent to provide the sample requested for laboratory testing. I understand both my right to refuse testing, and the impact refusal of testing may have on my treatment.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between mt-6 mb-8">
+      <div className="flex items-center justify-between mt-6 mb-8">
         <button
           onClick={() => setStep(2)}
           className="h-10 px-6 rounded-lg border border-input bg-background text-foreground text-sm font-medium hover:bg-muted transition-colors"
         >
           ← Back to clinical
         </button>
-        <button
-          onClick={() => setStep(4)}
-          className="h-12 px-8 rounded-lg bg-primary text-primary-foreground text-base font-medium hover:bg-primary/90 transition-colors"
-        >
-          Generate documents →
-        </button>
+        <div className="flex items-center gap-3">
+          {!order.signatures.physician && (
+            <span className="text-xs text-destructive">Physician signature required</span>
+          )}
+          <button
+            onClick={() => setStep(4)}
+            disabled={!order.signatures.physician}
+            className="h-12 px-8 rounded-lg bg-primary text-primary-foreground text-base font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Generate documents →
+          </button>
+        </div>
       </div>
     </div>
   );
