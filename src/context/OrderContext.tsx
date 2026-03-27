@@ -9,6 +9,7 @@ const emptyState: OrderState = {
   patient: { firstName: '', lastName: '', dob: '', gender: '', ethnicity: '', address1: '', address2: '', city: '', state: '', zip: '', phone: '', email: '' },
   insurance: { type: '', provider: '', policyId: '', groupId: '', phoneNumber: '', relationshipToInsured: '' },
   collection: { date: '', time: '', method: '' },
+  signatures: { physician: '', patient: '', physicianDate: '', patientDate: '' },
   diagnoses: [],
   medications: [],
   qualification: {
