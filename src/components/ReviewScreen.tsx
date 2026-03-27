@@ -148,21 +148,7 @@ export function ReviewScreen() {
           {/* Medications */}
           <div className="mb-4">
             <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">Medications</div>
-            {prescribed.length > 0 && (
-              <div className="mb-2">
-                <div className="text-xs text-muted-foreground mb-1">Prescribed</div>
-                {prescribed.map(med => <MedLine key={med.id} med={med} />)}
-              </div>
-            )}
-            {considered.length > 0 && (
-              <>
-                {prescribed.length > 0 && <div className="border-t border-border my-2" />}
-                <div>
-                  <div className="text-xs text-muted-foreground mb-1">Considered</div>
-                  {considered.map(med => <MedLine key={med.id} med={med} />)}
-                </div>
-              </>
-            )}
+            {order.medications.map(med => <MedLine key={med.id} med={med} />)}
           </div>
 
           {/* Qualification mini-dashboard */}

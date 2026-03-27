@@ -91,7 +91,7 @@ export function MedicationPanel() {
       brand: med.brand,
       dose: '',
       frequency: '',
-      type: activeTab,
+      type: 'prescribed',
       linkedDiagnosis: defaultDx,
       geneMatches,
       isBillable: geneMatches.length > 0,
@@ -114,7 +114,7 @@ export function MedicationPanel() {
       brand: '',
       dose: '',
       frequency: '',
-      type: activeTab,
+      type: 'prescribed',
       linkedDiagnosis: order.diagnoses.length > 0 ? order.diagnoses[0].code : '',
       geneMatches,
       isBillable: geneMatches.length > 0,
@@ -136,34 +136,21 @@ export function MedicationPanel() {
 
   return (
     <div>
-      <div className="text-xs font-medium uppercase tracking-wide text-text-tertiary mb-2">Medications</div>
+      <div className="text-xs font-medium uppercase tracking-wide text-text-tertiary mb-2">
+        Medications
+        {order.medications.length > 0 && (
+          <span className="normal-case tracking-normal font-normal ml-2">
+            ({prescribed.length} prescribed, {considered.length} considered)
+          </span>
+        )}
+      </div>
       <div className="flex items-center gap-4 mb-3 text-[10px]">
         <span className="flex items-center gap-1"><Check size={12} className="text-tier-green" /> Billable (Z-code gene)</span>
         <span className="flex items-center gap-1"><Info size={12} className="text-tier-purple" /> Tested · not separately billable</span>
         <span className="flex items-center gap-1"><AlertTriangle size={12} className="text-destructive" /> No gene interaction</span>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-3">
-        {(['prescribed', 'considered'] as const).map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`rounded-lg px-4 py-1.5 text-xs transition-colors ${
-              activeTab === tab
-                ? 'bg-card border border-border text-foreground font-medium shadow-sm'
-                : 'bg-surface text-text-tertiary hover:text-text-secondary cursor-pointer'
-            }`}
-          >
-            {tab === 'prescribed' ? 'Currently prescribed' : 'Being considered'}
-            {order.medications.filter(m => m.type === tab).length > 0 && (
-              <span className="ml-1.5 text-[10px] bg-muted rounded px-1">
-                {order.medications.filter(m => m.type === tab).length}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
+      
 
       {/* Search */}
       <div ref={wrapperRef} className="relative mb-3">
@@ -264,7 +251,7 @@ export function MedicationPanel() {
                               brand: dbEntry?.brand || '',
                               dose: '',
                               frequency: '',
-                              type: activeTab,
+                              type: 'prescribed',
                               linkedDiagnosis: order.diagnoses.length > 0 ? order.diagnoses[0].code : '',
                               geneMatches: gm,
                               isBillable: gm.length > 0,
@@ -293,13 +280,23 @@ export function MedicationPanel() {
       )}
 
       {/* Medication rows */}
-      {tabMeds.length === 0 ? (
+      {order.medications.length === 0 ? (
         <div className="border border-dashed border-border rounded-lg p-6 flex items-center justify-center">
           <p className="text-sm text-text-tertiary">Add medications to see qualification results</p>
         </div>
       ) : (
         <div className="flex flex-col gap-1.5">
-          {tabMeds.map(med => (
+          {prescribed.map(med => (
+            <MedRow key={med.id} med={med} onRemove={() => removeMedication(med.id)} />
+          ))}
+          {prescribed.length > 0 && considered.length > 0 && (
+            <div className="flex items-center gap-2 py-1">
+              <div className="flex-1 border-t border-border" />
+              <span className="text-[9px] text-text-tertiary uppercase tracking-wide">Being considered</span>
+              <div className="flex-1 border-t border-border" />
+            </div>
+          )}
+          {considered.map(med => (
             <MedRow key={med.id} med={med} onRemove={() => removeMedication(med.id)} />
           ))}
         </div>
@@ -318,7 +315,7 @@ function MedRow({ med, onRemove }: { med: Medication; onRemove: () => void }) {
       : 'bg-tier-red-bg border-tier-red-border';
 
   return (
-    <div className={`group rounded-lg px-3 py-2 border ${rowStyle}`}>
+    <div className={`group rounded-lg px-3 py-2 border ${rowStyle} ${med.type === 'considered' ? 'border-l-2 border-l-primary/30' : ''}`}>
       {/* Top row: name + badges */}
       <div className="flex items-center gap-2">
         <div className="flex-1 min-w-0">
@@ -344,6 +341,9 @@ function MedRow({ med, onRemove }: { med: Medication; onRemove: () => void }) {
               {g}
             </span>
           ))}
+          {med.type === 'considered' && (
+            <span className="text-[9px] text-primary/60 italic">considered</span>
+          )}
           {med.isBillable ? (
             <Check size={14} className="text-tier-green" />
           ) : med.isTested ? (
@@ -368,8 +368,32 @@ function MedRow({ med, onRemove }: { med: Medication; onRemove: () => void }) {
         </div>
       </div>
 
-      {/* Bottom row: dose, frequency, linked diagnosis */}
+      {/* Bottom row: toggle, dose, frequency, linked diagnosis */}
       <div className="flex items-center gap-2 mt-1.5">
+        <div className="flex h-5 rounded overflow-hidden border border-border text-[9px]">
+          <button
+            type="button"
+            onClick={() => updateMedication(med.id, { type: 'prescribed' })}
+            className={`px-1.5 transition-colors ${
+              med.type === 'prescribed'
+                ? 'bg-primary text-primary-foreground font-medium'
+                : 'bg-background text-text-tertiary hover:bg-muted'
+            }`}
+          >
+            Rx
+          </button>
+          <button
+            type="button"
+            onClick={() => updateMedication(med.id, { type: 'considered' })}
+            className={`px-1.5 transition-colors border-l border-border ${
+              med.type === 'considered'
+                ? 'bg-accent-light text-primary font-medium'
+                : 'bg-background text-text-tertiary hover:bg-muted'
+            }`}
+          >
+            Considered
+          </button>
+        </div>
         <input
           type="text"
           value={med.dose}
