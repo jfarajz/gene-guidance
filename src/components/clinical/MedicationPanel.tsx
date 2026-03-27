@@ -217,6 +217,81 @@ export function MedicationPanel() {
         )}
       </div>
 
+      {/* Browse by class */}
+      <button
+        onClick={() => setBrowserOpen(!browserOpen)}
+        className="flex items-center gap-1 text-xs text-primary cursor-pointer hover:underline mb-2"
+      >
+        <Pill size={12} />
+        Browse by drug class
+        {browserOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+      </button>
+
+      {browserOpen && (
+        <div className="bg-surface/50 border border-border rounded-lg p-2 mb-3 max-h-[200px] overflow-y-auto">
+          {MEDICATION_CATEGORIES.map(cat => {
+            const isOpen = openCategory === cat.label;
+            return (
+              <div key={cat.label}>
+                <button
+                  onClick={() => setOpenCategory(isOpen ? null : cat.label)}
+                  className="w-full text-xs font-medium text-text-secondary px-2 py-1.5 hover:bg-muted rounded cursor-pointer flex items-center justify-between"
+                >
+                  {cat.label}
+                  {isOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                </button>
+                {isOpen && (
+                  <div className="flex flex-wrap gap-1 px-2 py-1.5">
+                    {cat.meds.map(generic => {
+                      const dbEntry = MEDICATION_DATABASE.find(m => m.generic === generic);
+                      const added = order.medications.some(m => m.generic === generic);
+                      const gm = getGeneMatches(generic);
+                      const tg = getTestedGenes(generic);
+                      const dotCls = gm.length > 0
+                        ? 'bg-primary'
+                        : tg.length > 0
+                          ? 'border border-tier-purple bg-transparent'
+                          : 'bg-destructive';
+                      return (
+                        <button
+                          key={generic}
+                          disabled={added}
+                          onClick={() => {
+                            const testedGenes = tg;
+                            const newMed: Medication = {
+                              id: `med-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                              generic,
+                              brand: dbEntry?.brand || '',
+                              dose: '',
+                              frequency: '',
+                              type: activeTab,
+                              linkedDiagnosis: order.diagnoses.length > 0 ? order.diagnoses[0].code : '',
+                              geneMatches: gm,
+                              isBillable: gm.length > 0,
+                              isTested: testedGenes.length > 0,
+                              testedGenes,
+                            };
+                            addMedication(newMed);
+                          }}
+                          className={`inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-md transition-colors ${
+                            added
+                              ? 'bg-primary/10 border border-primary text-primary opacity-60 cursor-default'
+                              : 'bg-surface border border-border text-text-secondary hover:bg-muted cursor-pointer'
+                          }`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotCls}`} />
+                          {generic}{dbEntry ? ` (${dbEntry.brand})` : ''}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {/* Medication rows */}
       {tabMeds.length === 0 ? (
         <div className="border border-dashed border-border rounded-lg p-6 flex items-center justify-center">
