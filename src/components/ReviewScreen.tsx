@@ -48,8 +48,6 @@ export function ReviewScreen() {
   const orderNum = orderNumRef.current || generateOrderNumber();
   const { provider: prov, patient: pat, insurance: ins, collection: col, diagnoses, medications, qualification: qual } = order;
 
-  const prescribed = medications.filter(m => m.type === 'prescribed');
-  const considered = medications.filter(m => m.type === 'considered');
 
   const formatDate = (d: string) => {
     if (!d) return '—';
@@ -148,21 +146,7 @@ export function ReviewScreen() {
           {/* Medications */}
           <div className="mb-4">
             <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">Medications</div>
-            {prescribed.length > 0 && (
-              <div className="mb-2">
-                <div className="text-xs text-muted-foreground mb-1">Prescribed</div>
-                {prescribed.map(med => <MedLine key={med.id} med={med} />)}
-              </div>
-            )}
-            {considered.length > 0 && (
-              <>
-                {prescribed.length > 0 && <div className="border-t border-border my-2" />}
-                <div>
-                  <div className="text-xs text-muted-foreground mb-1">Considered</div>
-                  {considered.map(med => <MedLine key={med.id} med={med} />)}
-                </div>
-              </>
-            )}
+            {order.medications.map(med => <MedLine key={med.id} med={med} />)}
           </div>
 
           {/* Qualification mini-dashboard */}
@@ -280,6 +264,7 @@ function MedLine({ med }: { med: import('@/types/order').Medication }) {
   return (
     <div className="flex items-center gap-1.5 text-sm py-0.5">
       <span className={`font-medium ${med.isBillable ? 'text-foreground' : med.isTested ? 'text-tier-purple' : 'text-destructive'}`}>{med.generic}</span>
+      {med.type === 'considered' && <span className="text-[9px] text-primary/60 italic">(considered)</span>}
       {med.isBillable && med.geneMatches.map(gm => (
         <span key={gm.gene} className="bg-gene-badge-bg text-gene-badge-text text-[10px] px-1.5 py-0.5 rounded font-medium">{gm.gene}</span>
       ))}
