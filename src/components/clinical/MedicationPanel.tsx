@@ -3,7 +3,23 @@ import { useOrder } from '@/context/OrderContext';
 import { MEDICATION_DATABASE } from '@/data/constants';
 import { getGeneMatches, getTestedGenes } from '@/engine/qualification';
 import type { Medication, Diagnosis } from '@/types/order';
-import { X, Check, AlertTriangle, Info, ChevronDown } from 'lucide-react';
+import { X, Check, AlertTriangle, Info, ChevronDown, ChevronUp, ChevronRight, Pill } from 'lucide-react';
+
+const MEDICATION_CATEGORIES = [
+  { label: "SSRIs & SNRIs", meds: ["escitalopram","sertraline","citalopram","paroxetine","fluvoxamine","venlafaxine","vortioxetine"] },
+  { label: "Tricyclic Antidepressants", meds: ["amitriptyline","nortriptyline","doxepin","desipramine","clomipramine","imipramine","trimipramine"] },
+  { label: "Antipsychotics", meds: ["aripiprazole","brexpiprazole","clozapine","iloperidone","perphenazine","pimozide","thioridazine"] },
+  { label: "Beta Blockers", meds: ["metoprolol tartrate","metoprolol succinate","carvedilol","propafenone"] },
+  { label: "Antiplatelet & Anticoagulant", meds: ["clopidogrel","warfarin"] },
+  { label: "Statins", meds: ["fluvastatin","rosuvastatin","atorvastatin","simvastatin","lovastatin","pitavastatin","pravastatin"] },
+  { label: "NSAIDs", meds: ["meloxicam","celecoxib","piroxicam"] },
+  { label: "Opioids & Pain", meds: ["codeine","tramadol","oliceridine"] },
+  { label: "PPIs", meds: ["omeprazole","pantoprazole","lansoprazole","dexlansoprazole"] },
+  { label: "ADHD Medications", meds: ["amphetamine","atomoxetine"] },
+  { label: "Anticonvulsants", meds: ["phenytoin","fosphenytoin","brivaracetam","clobazam"] },
+  { label: "Other Billable", meds: ["ondansetron","tamoxifen","valbenazine","deutetrabenazine","eliglustat","tolterodine","cevimeline","metoclopramide","lofexidine","siponimod","nateglinide","voriconazole"] },
+  { label: "Common Non-Billable", meds: ["losartan","lisinopril","amlodipine","hydrochlorothiazide","metformin","empagliflozin","trazodone","bupropion","fluoxetine","duloxetine","clonazepam","lorazepam","triazolam","atenolol","propranolol","aspirin","apixaban","levothyroxine","donepezil"] },
+];
 
 function getRecommendedDiagnosis(generic: string, diagnoses: Diagnosis[]): string {
   if (diagnoses.length <= 1) return '';
