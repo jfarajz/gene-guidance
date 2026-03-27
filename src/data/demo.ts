@@ -59,6 +59,7 @@ const sharedBase: Omit<OrderState, "medications" | "qualification"> = {
     phoneNumber: "",
     relationshipToInsured: "Self",
   },
+  signatures: { physician: '', patient: '', physicianDate: '', patientDate: '' },
   collection: {
     date: "2025-06-20",
     time: "14:00",
