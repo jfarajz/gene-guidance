@@ -3,7 +3,23 @@ import { useOrder } from '@/context/OrderContext';
 import { MEDICATION_DATABASE } from '@/data/constants';
 import { getGeneMatches, getTestedGenes } from '@/engine/qualification';
 import type { Medication, Diagnosis } from '@/types/order';
-import { X, Check, AlertTriangle, Info, ChevronDown } from 'lucide-react';
+import { X, Check, AlertTriangle, Info, ChevronDown, ChevronUp, ChevronRight, Pill } from 'lucide-react';
+
+const MEDICATION_CATEGORIES = [
+  { label: "SSRIs & SNRIs", meds: ["escitalopram","sertraline","citalopram","paroxetine","fluvoxamine","venlafaxine","vortioxetine"] },
+  { label: "Tricyclic Antidepressants", meds: ["amitriptyline","nortriptyline","doxepin","desipramine","clomipramine","imipramine","trimipramine"] },
+  { label: "Antipsychotics", meds: ["aripiprazole","brexpiprazole","clozapine","iloperidone","perphenazine","pimozide","thioridazine"] },
+  { label: "Beta Blockers", meds: ["metoprolol tartrate","metoprolol succinate","carvedilol","propafenone"] },
+  { label: "Antiplatelet & Anticoagulant", meds: ["clopidogrel","warfarin"] },
+  { label: "Statins", meds: ["fluvastatin","rosuvastatin","atorvastatin","simvastatin","lovastatin","pitavastatin","pravastatin"] },
+  { label: "NSAIDs", meds: ["meloxicam","celecoxib","piroxicam"] },
+  { label: "Opioids & Pain", meds: ["codeine","tramadol","oliceridine"] },
+  { label: "PPIs", meds: ["omeprazole","pantoprazole","lansoprazole","dexlansoprazole"] },
+  { label: "ADHD Medications", meds: ["amphetamine","atomoxetine"] },
+  { label: "Anticonvulsants", meds: ["phenytoin","fosphenytoin","brivaracetam","clobazam"] },
+  { label: "Other Billable", meds: ["ondansetron","tamoxifen","valbenazine","deutetrabenazine","eliglustat","tolterodine","cevimeline","metoclopramide","lofexidine","siponimod","nateglinide","voriconazole"] },
+  { label: "Common Non-Billable", meds: ["losartan","lisinopril","amlodipine","hydrochlorothiazide","metformin","empagliflozin","trazodone","bupropion","fluoxetine","duloxetine","clonazepam","lorazepam","triazolam","atenolol","propranolol","aspirin","apixaban","levothyroxine","donepezil"] },
+];
 
 function getRecommendedDiagnosis(generic: string, diagnoses: Diagnosis[]): string {
   if (diagnoses.length <= 1) return '';
@@ -36,6 +52,8 @@ export function MedicationPanel() {
   const [activeTab, setActiveTab] = useState<'prescribed' | 'considered'>('prescribed');
   const [search, setSearch] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [browserOpen, setBrowserOpen] = useState(false);
+  const [openCategory, setOpenCategory] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -198,6 +216,81 @@ export function MedicationPanel() {
           </div>
         )}
       </div>
+
+      {/* Browse by class */}
+      <button
+        onClick={() => setBrowserOpen(!browserOpen)}
+        className="flex items-center gap-1 text-xs text-primary cursor-pointer hover:underline mb-2"
+      >
+        <Pill size={12} />
+        Browse by drug class
+        {browserOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+      </button>
+
+      {browserOpen && (
+        <div className="bg-surface/50 border border-border rounded-lg p-2 mb-3 max-h-[200px] overflow-y-auto">
+          {MEDICATION_CATEGORIES.map(cat => {
+            const isOpen = openCategory === cat.label;
+            return (
+              <div key={cat.label}>
+                <button
+                  onClick={() => setOpenCategory(isOpen ? null : cat.label)}
+                  className="w-full text-xs font-medium text-text-secondary px-2 py-1.5 hover:bg-muted rounded cursor-pointer flex items-center justify-between"
+                >
+                  {cat.label}
+                  {isOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                </button>
+                {isOpen && (
+                  <div className="flex flex-wrap gap-1 px-2 py-1.5">
+                    {cat.meds.map(generic => {
+                      const dbEntry = MEDICATION_DATABASE.find(m => m.generic === generic);
+                      const added = order.medications.some(m => m.generic === generic);
+                      const gm = getGeneMatches(generic);
+                      const tg = getTestedGenes(generic);
+                      const dotCls = gm.length > 0
+                        ? 'bg-primary'
+                        : tg.length > 0
+                          ? 'border border-tier-purple bg-transparent'
+                          : 'bg-destructive';
+                      return (
+                        <button
+                          key={generic}
+                          disabled={added}
+                          onClick={() => {
+                            const testedGenes = tg;
+                            const newMed: Medication = {
+                              id: `med-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                              generic,
+                              brand: dbEntry?.brand || '',
+                              dose: '',
+                              frequency: '',
+                              type: activeTab,
+                              linkedDiagnosis: order.diagnoses.length > 0 ? order.diagnoses[0].code : '',
+                              geneMatches: gm,
+                              isBillable: gm.length > 0,
+                              isTested: testedGenes.length > 0,
+                              testedGenes,
+                            };
+                            addMedication(newMed);
+                          }}
+                          className={`inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-md transition-colors ${
+                            added
+                              ? 'bg-primary/10 border border-primary text-primary opacity-60 cursor-default'
+                              : 'bg-surface border border-border text-text-secondary hover:bg-muted cursor-pointer'
+                          }`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotCls}`} />
+                          {generic}{dbEntry ? ` (${dbEntry.brand})` : ''}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Medication rows */}
       {tabMeds.length === 0 ? (
