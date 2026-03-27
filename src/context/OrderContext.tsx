@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, type ReactNode } from "react";
-import type { OrderState, Diagnosis, Medication } from "@/types/order";
+import type { OrderState, Diagnosis, Medication, InsuranceCards } from "@/types/order";
 import { qualifyOrder } from "@/engine/qualification";
 
 const emptyState: OrderState = {
@@ -21,6 +21,7 @@ const emptyState: OrderState = {
     email: "",
   },
   insurance: { type: "", provider: "", policyId: "", groupId: "", phoneNumber: "", relationshipToInsured: "" },
+  insuranceCards: { front: "", back: "" },
   collection: { date: "", time: "", method: "" },
   diagnoses: [],
   medications: [],
@@ -52,6 +53,7 @@ interface OrderContextType {
   updateMedication: (id: string, updates: Partial<Medication>) => void;
   removeMedication: (id: string) => void;
   updateSignatures: (s: Partial<OrderState["signatures"]>) => void;
+  updateInsuranceCards: (c: Partial<InsuranceCards>) => void;
   loadDemo: (state: OrderState) => void;
   resetOrder: () => void;
 }
@@ -97,6 +99,9 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const updateSignatures = (sigs: Partial<OrderState["signatures"]>) =>
     setOrder((prev) => ({ ...prev, signatures: { ...prev.signatures, ...sigs } }));
 
+  const updateInsuranceCards = (cards: Partial<InsuranceCards>) =>
+    setOrder((prev) => ({ ...prev, insuranceCards: { ...prev.insuranceCards, ...cards } }));
+
   const loadDemo = (state: OrderState) => setOrder(state);
   const resetOrder = () => setOrder(emptyState);
 
@@ -115,6 +120,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         updateMedication,
         removeMedication,
         updateSignatures,
+        updateInsuranceCards,
         loadDemo,
         resetOrder,
       }}
