@@ -52,6 +52,8 @@ export function MedicationPanel() {
   const [activeTab, setActiveTab] = useState<'prescribed' | 'considered'>('prescribed');
   const [search, setSearch] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [browserOpen, setBrowserOpen] = useState(false);
+  const [openCategory, setOpenCategory] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
