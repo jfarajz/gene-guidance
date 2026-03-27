@@ -1,4 +1,4 @@
-export type CoverageTier = 'green' | 'yellow' | 'red';
+export type CoverageTier = "green" | "yellow" | "red";
 
 export interface Diagnosis {
   code: string;
@@ -7,8 +7,8 @@ export interface Diagnosis {
 }
 
 export interface GeneMatch {
-  gene: 'CYP2C19' | 'CYP2D6' | 'CYP2C9';
-  cpt: '81225' | '81226' | '81227';
+  gene: "CYP2C19" | "CYP2D6" | "CYP2C9";
+  cpt: "81225" | "81226" | "81227";
 }
 
 export interface Medication {
@@ -17,7 +17,7 @@ export interface Medication {
   brand: string;
   dose: string;
   frequency: string;
-  type: 'prescribed' | 'considered';
+  type: "prescribed" | "considered";
   linkedDiagnosis: string;
   geneMatches: GeneMatch[];
   isBillable: boolean;
@@ -25,9 +25,9 @@ export interface Medication {
 
 export interface QualificationResult {
   genes: {
-    CYP2C19: { qualified: boolean; cpt: '81225'; medications: string[] };
-    CYP2D6: { qualified: boolean; cpt: '81226'; medications: string[] };
-    CYP2C9: { qualified: boolean; cpt: '81227'; medications: string[] };
+    CYP2C19: { qualified: boolean; cpt: "81225"; medications: string[] };
+    CYP2D6: { qualified: boolean; cpt: "81226"; medications: string[] };
+    CYP2C9: { qualified: boolean; cpt: "81227"; medications: string[] };
   };
   billableCPTs: string[];
   box19: { text: string; charCount: number; overLimit: boolean };
@@ -37,7 +37,7 @@ export interface QualificationResult {
 }
 
 export interface Suggestion {
-  gene: 'CYP2C19' | 'CYP2D6' | 'CYP2C9';
+  gene: "CYP2C19" | "CYP2D6" | "CYP2C9";
   cpt: string;
   message: string;
   medications: { generic: string; reason: string }[];
@@ -93,4 +93,10 @@ export interface OrderState {
   diagnoses: Diagnosis[];
   medications: Medication[];
   qualification: QualificationResult;
+  signatures: {
+    physician: string; // base64 PNG data URL
+    patient: string; // base64 PNG data URL
+    physicianDate: string;
+    patientDate: string;
+  };
 }
