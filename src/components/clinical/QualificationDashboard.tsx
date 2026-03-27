@@ -1,5 +1,5 @@
 import { useOrder } from '@/context/OrderContext';
-import { getGeneMatches } from '@/engine/qualification';
+import { getGeneMatches, getTestedGenes } from '@/engine/qualification';
 import type { Medication, Suggestion } from '@/types/order';
 import { MEDICATION_DATABASE } from '@/data/constants';
 
@@ -14,6 +14,7 @@ export function QualificationDashboard() {
     const dbEntry = MEDICATION_DATABASE.find(m => m.generic === generic);
     if (!dbEntry) return;
     const geneMatches = getGeneMatches(generic);
+    const testedGenes = getTestedGenes(generic);
     const defaultDx = diagnoses.length > 0 ? diagnoses[0].code : '';
     const med: Medication = {
       id: `sug-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
@@ -25,6 +26,8 @@ export function QualificationDashboard() {
       linkedDiagnosis: defaultDx,
       geneMatches,
       isBillable: geneMatches.length > 0,
+      isTested: testedGenes.length > 0,
+      testedGenes,
     };
     addMedication(med);
   };

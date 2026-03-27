@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useOrder } from '@/context/OrderContext';
 import { MEDICATION_DATABASE } from '@/data/constants';
-import { getGeneMatches } from '@/engine/qualification';
+import { getGeneMatches, getTestedGenes } from '@/engine/qualification';
 import type { Medication, Diagnosis } from '@/types/order';
-import { X, Check, AlertTriangle, ChevronDown } from 'lucide-react';
+import { X, Check, AlertTriangle, Info, ChevronDown } from 'lucide-react';
 
 function getRecommendedDiagnosis(generic: string, diagnoses: Diagnosis[]): string {
   if (diagnoses.length <= 1) return '';
@@ -65,6 +65,7 @@ export function MedicationPanel() {
 
   const handleSelect = (med: typeof MEDICATION_DATABASE[0]) => {
     const geneMatches = getGeneMatches(med.generic);
+    const testedGenes = getTestedGenes(med.generic);
     const defaultDx = order.diagnoses.length > 0 ? order.diagnoses[0].code : '';
     const newMed: Medication = {
       id: `med-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
@@ -76,6 +77,8 @@ export function MedicationPanel() {
       linkedDiagnosis: defaultDx,
       geneMatches,
       isBillable: geneMatches.length > 0,
+      isTested: testedGenes.length > 0,
+      testedGenes,
     };
     addMedication(newMed);
     setSearch('');
@@ -86,6 +89,7 @@ export function MedicationPanel() {
     const name = search.trim();
     if (!name || alreadyAdded) return;
     const geneMatches = getGeneMatches(name);
+    const testedGenes = getTestedGenes(name);
     const newMed: Medication = {
       id: `med-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       generic: name.toLowerCase(),
@@ -96,6 +100,8 @@ export function MedicationPanel() {
       linkedDiagnosis: order.diagnoses.length > 0 ? order.diagnoses[0].code : '',
       geneMatches,
       isBillable: geneMatches.length > 0,
+      isTested: testedGenes.length > 0,
+      testedGenes,
     };
     addMedication(newMed);
     setSearch('');
