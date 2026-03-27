@@ -21,6 +21,8 @@ export interface Medication {
   linkedDiagnosis: string;
   geneMatches: GeneMatch[];
   isBillable: boolean;
+  isTested: boolean;
+  testedGenes: string[];
 }
 
 export interface QualificationResult {

@@ -170,13 +170,22 @@ export const MEDICATION_DATABASE: { generic: string; brand: string; class: strin
   { generic: "warfarin", brand: "Coumadin", class: "Anticoagulant", billable: true },
   { generic: "nateglinide", brand: "Starlix", class: "Antihyperglycemic", billable: true },
   { generic: "siponimod", brand: "Mayzent", class: "Multiple sclerosis", billable: true },
-  // NOT BILLABLE
+  // TESTED (non-Z-code panel genes)
   { generic: "rosuvastatin", brand: "Crestor", class: "Statin", billable: false },
   { generic: "atorvastatin", brand: "Lipitor", class: "Statin", billable: false },
   { generic: "simvastatin", brand: "Zocor", class: "Statin", billable: false },
   { generic: "lovastatin", brand: "Mevacor", class: "Statin", billable: false },
   { generic: "pitavastatin", brand: "Livalo", class: "Statin", billable: false },
   { generic: "pravastatin", brand: "Pravachol", class: "Statin", billable: false },
+  { generic: "tacrolimus", brand: "Prograf", class: "Immunosuppressant", billable: false },
+  { generic: "capecitabine", brand: "Xeloda", class: "Antineoplastic", billable: false },
+  { generic: "fluorouracil", brand: "Adrucil", class: "Antineoplastic", billable: false },
+  { generic: "azathioprine", brand: "Azasan", class: "Immunosuppressant", billable: false },
+  { generic: "mercaptopurine", brand: "Purixan", class: "Immunosuppressant", billable: false },
+  { generic: "lecanemab", brand: "Leqembi", class: "Alzheimer therapy", billable: false },
+  { generic: "donanemab", brand: "Kisunla", class: "Alzheimer therapy", billable: false },
+  { generic: "efavirenz", brand: "Sustiva", class: "Antiretroviral", billable: false },
+  // NO INTERACTION
   { generic: "losartan", brand: "Cozaar", class: "ARB", billable: false },
   { generic: "lisinopril", brand: "Zestril", class: "ACE inhibitor", billable: false },
   { generic: "enalapril", brand: "Vasotec", class: "ACE inhibitor", billable: false },
