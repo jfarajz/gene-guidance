@@ -83,12 +83,18 @@ export interface CollectionInfo {
   method: string;
 }
 
+export interface InsuranceCards {
+  front: string; // base64 data URL
+  back: string;  // base64 data URL
+}
+
 export interface OrderState {
   currentStep: number;
   orderNumber: string;
   provider: ProviderInfo;
   patient: PatientInfo;
   insurance: InsuranceInfo;
+  insuranceCards: InsuranceCards;
   collection: CollectionInfo;
   diagnoses: Diagnosis[];
   medications: Medication[];
