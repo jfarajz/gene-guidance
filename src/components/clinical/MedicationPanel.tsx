@@ -118,7 +118,12 @@ export function MedicationPanel() {
 
   return (
     <div>
-      <div className="text-xs font-medium uppercase tracking-wide text-text-tertiary mb-3">Medications</div>
+      <div className="text-xs font-medium uppercase tracking-wide text-text-tertiary mb-2">Medications</div>
+      <div className="flex items-center gap-4 mb-3 text-[10px]">
+        <span className="flex items-center gap-1"><Check size={12} className="text-tier-green" /> Billable (Z-code gene)</span>
+        <span className="flex items-center gap-1"><Info size={12} className="text-tier-purple" /> Tested · not separately billable</span>
+        <span className="flex items-center gap-1"><AlertTriangle size={12} className="text-destructive" /> No gene interaction</span>
+      </div>
 
       {/* Tabs */}
       <div className="flex gap-2 mb-3">
