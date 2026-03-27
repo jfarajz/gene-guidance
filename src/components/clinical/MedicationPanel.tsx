@@ -58,6 +58,9 @@ export function MedicationPanel() {
       .slice(0, 8)
     : [];
 
+  const alreadyAdded = order.medications.some(m => m.generic.toLowerCase() === query);
+  const showFreeText = query.length >= 2 && results.length === 0 && !alreadyAdded;
+
   const tabMeds = order.medications.filter(m => m.type === activeTab);
 
   const handleSelect = (med: typeof MEDICATION_DATABASE[0]) => {
@@ -77,6 +80,34 @@ export function MedicationPanel() {
     addMedication(newMed);
     setSearch('');
     setShowDropdown(false);
+  };
+
+  const handleFreeTextAdd = () => {
+    const name = search.trim();
+    if (!name || alreadyAdded) return;
+    const geneMatches = getGeneMatches(name);
+    const newMed: Medication = {
+      id: `med-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      generic: name.toLowerCase(),
+      brand: '',
+      dose: '',
+      frequency: '',
+      type: activeTab,
+      linkedDiagnosis: order.diagnoses.length > 0 ? order.diagnoses[0].code : '',
+      geneMatches,
+      isBillable: geneMatches.length > 0,
+    };
+    addMedication(newMed);
+    setSearch('');
+    setShowDropdown(false);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      if (results.length > 0) handleSelect(results[0]);
+      else if (showFreeText) handleFreeTextAdd();
+    }
+    if (e.key === 'Escape') setShowDropdown(false);
   };
 
   return (
