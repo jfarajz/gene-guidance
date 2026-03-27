@@ -51,6 +51,10 @@
     --tier-red-bg: 0 86% 97%;
     --tier-red-border: 0 93% 89%;
 
+    --tier-purple: 270 60% 50%;
+    --tier-purple-bg: 270 80% 97%;
+    --tier-purple-border: 270 70% 90%;
+
     /* Text hierarchy */
     --text-primary: 222 47% 11%;
     --text-secondary: 215 25% 35%;

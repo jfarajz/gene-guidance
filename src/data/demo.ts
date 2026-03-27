@@ -1,5 +1,5 @@
 import type { OrderState } from "@/types/order";
-import { getGeneMatches } from "@/engine/qualification";
+import { getGeneMatches, getTestedGenes } from "@/engine/qualification";
 import { qualifyOrder } from "@/engine/qualification";
 
 function makeMed(
@@ -12,6 +12,7 @@ function makeMed(
   linkedDiagnosis: string,
 ) {
   const geneMatches = getGeneMatches(generic);
+  const testedGenes = getTestedGenes(generic);
   return {
     id,
     generic,
@@ -22,6 +23,8 @@ function makeMed(
     linkedDiagnosis,
     geneMatches,
     isBillable: geneMatches.length > 0,
+    isTested: testedGenes.length > 0,
+    testedGenes,
   };
 }
 
