@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useOrder } from '@/context/OrderContext';
 import { Check, X } from 'lucide-react';
+import { SignaturePad } from '@/components/SignaturePad';
 
 function generateOrderNumber() {
   return 'FRP-' + Math.floor(1000000 + Math.random() * 9000000).toString();
