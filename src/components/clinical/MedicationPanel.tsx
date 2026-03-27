@@ -2,8 +2,34 @@ import { useState, useRef, useEffect } from 'react';
 import { useOrder } from '@/context/OrderContext';
 import { MEDICATION_DATABASE } from '@/data/constants';
 import { getGeneMatches } from '@/engine/qualification';
-import type { Medication } from '@/types/order';
+import type { Medication, Diagnosis } from '@/types/order';
 import { X, Check, AlertTriangle, ChevronDown } from 'lucide-react';
+
+function getRecommendedDiagnosis(generic: string, diagnoses: Diagnosis[]): string {
+  if (diagnoses.length <= 1) return '';
+  const name = generic.toLowerCase();
+  if (['metoprolol','carvedilol','propafenone','clopidogrel'].some(d => name.includes(d))) {
+    const cv = diagnoses.find(d => d.code.startsWith('I'));
+    if (cv) return cv.code;
+  }
+  if (['sertraline','escitalopram','citalopram','paroxetine','venlafaxine','fluvoxamine','doxepin','amitriptyline','aripiprazole','clozapine','vortioxetine','clomipramine','imipramine','trimipramine','nortriptyline','desipramine','atomoxetine','amphetamine'].some(d => name.includes(d))) {
+    const psy = diagnoses.find(d => d.code.startsWith('F'));
+    if (psy) return psy.code;
+  }
+  if (['fluvastatin','rosuvastatin','atorvastatin','simvastatin','lovastatin','pitavastatin','pravastatin'].some(d => name.includes(d))) {
+    const lip = diagnoses.find(d => d.code.startsWith('E78'));
+    if (lip) return lip.code;
+  }
+  if (['meloxicam','celecoxib','codeine','tramadol','piroxicam'].some(d => name.includes(d))) {
+    const pain = diagnoses.find(d => d.code === 'G89.29' || d.code.startsWith('M'));
+    if (pain) return pain.code;
+  }
+  if (['omeprazole','pantoprazole','lansoprazole','dexlansoprazole'].some(d => name.includes(d))) {
+    const gi = diagnoses.find(d => d.code.startsWith('K'));
+    if (gi) return gi.code;
+  }
+  return '';
+}
 
 export function MedicationPanel() {
   const { order, addMedication, removeMedication } = useOrder();
@@ -86,10 +112,11 @@ export function MedicationPanel() {
           value={search}
           onChange={e => { setSearch(e.target.value); setShowDropdown(true); }}
           onFocus={() => setShowDropdown(true)}
+          onKeyDown={handleSearchKeyDown}
           placeholder="Search medication name, brand, or class..."
           className="w-full h-10 rounded-lg border border-border px-3 text-sm text-foreground placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
         />
-        {showDropdown && results.length > 0 && (
+        {showDropdown && (results.length > 0 || showFreeText) && (
           <div className="absolute z-20 top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto">
             {results.map(r => (
               <button
@@ -108,6 +135,16 @@ export function MedicationPanel() {
                 )}
               </button>
             ))}
+            {showFreeText && (
+              <button
+                onClick={handleFreeTextAdd}
+                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted transition-colors text-left"
+              >
+                <span className="w-2 h-2 rounded-full shrink-0 bg-muted-foreground" />
+                <span className="font-medium text-sm text-foreground">{search.trim()}</span>
+                <span className="text-sm text-text-tertiary">Add custom medication (press Enter)</span>
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -188,19 +225,35 @@ function MedRow({ med, onRemove }: { med: Medication; onRemove: () => void }) {
           placeholder="Frequency"
           className="w-[100px] h-6 rounded border border-border px-2 text-xs text-foreground placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-primary bg-background"
         />
-        <div className="relative ml-auto">
-          <select
-            value={med.linkedDiagnosis}
-            onChange={e => updateMedication(med.id, { linkedDiagnosis: e.target.value })}
-            className="h-6 rounded border border-border pl-2 pr-5 text-xs text-text-secondary bg-background appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary"
-          >
-            {order.diagnoses.length === 0 && <option value="">No diagnoses</option>}
-            {order.diagnoses.map(d => (
-              <option key={d.code} value={d.code}>{d.code}</option>
-            ))}
-          </select>
-          <ChevronDown size={10} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-text-tertiary pointer-events-none" />
-        </div>
+        {(() => {
+          const recommended = getRecommendedDiagnosis(med.generic, order.diagnoses);
+          return (
+            <div className="relative ml-auto">
+              <select
+                value={med.linkedDiagnosis}
+                onChange={e => updateMedication(med.id, { linkedDiagnosis: e.target.value })}
+                className={`h-6 rounded border pl-2 pr-5 text-xs bg-background appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary ${
+                  recommended && med.linkedDiagnosis !== recommended
+                    ? 'border-tier-yellow text-tier-yellow'
+                    : 'border-border text-text-secondary'
+                }`}
+              >
+                {order.diagnoses.length === 0 && <option value="">No diagnoses</option>}
+                {order.diagnoses.map(d => (
+                  <option key={d.code} value={d.code}>
+                    {d.code}{d.code === recommended ? ' ★' : ''}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown size={10} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-text-tertiary pointer-events-none" />
+              {recommended && med.linkedDiagnosis !== recommended && (
+                <div className="text-[10px] text-tier-yellow mt-0.5">
+                  Suggested: {recommended}
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

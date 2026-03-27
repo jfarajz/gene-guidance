@@ -54,6 +54,10 @@ export function ProviderScreen() {
 
   return (
     <div className="py-8" onKeyDown={handleKeyDown}>
+      <div className="text-center mb-8">
+        <h1 className="text-2xl font-bold text-foreground">PGx Smart Order</h1>
+        <p className="text-sm text-muted-foreground mt-1">Order a pharmacogenomic test and generate all required documentation in under 3 minutes.</p>
+      </div>
       <div className="max-w-lg mx-auto bg-card rounded-xl border border-border p-6">
         <h2 className="text-xl font-semibold text-foreground mb-6">Provider information</h2>
 

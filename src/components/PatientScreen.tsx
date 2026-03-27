@@ -246,7 +246,7 @@ export function PatientScreen() {
     }
   }, [ins.type]);
 
-  const patientValid = pat.firstName && pat.lastName && pat.dob && pat.gender && pat.address1 && pat.city && pat.state && pat.zip && pat.phone && pat.email;
+  const patientValid = pat.firstName && pat.lastName && pat.dob && pat.gender && pat.address1 && pat.city && pat.state && pat.zip && pat.phone;
   const insValid = ins.type && ins.relationshipToInsured && ins.policyId;
   const colValid = col.date && col.time && col.method;
   const canContinue = patientValid && insValid && colValid;
@@ -318,8 +318,8 @@ export function PatientScreen() {
               <ValidatedInput required type="tel" value={pat.phone} onChange={e => updatePatient({ ...pat, phone: e.target.value })} placeholder="(555) 555-0000" />
             </div>
             <div>
-              <label className={labelCls}>Email <span className="text-destructive">*</span></label>
-              <ValidatedInput required type="email" value={pat.email} onChange={e => updatePatient({ ...pat, email: e.target.value })} placeholder="patient@email.com" />
+              <label className={labelCls}>Email</label>
+              <input type="email" value={pat.email} onChange={e => updatePatient({ ...pat, email: e.target.value })} placeholder="patient@email.com" className={inputCls} />
             </div>
           </div>
         </div>

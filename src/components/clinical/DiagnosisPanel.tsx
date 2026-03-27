@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useOrder } from '@/context/OrderContext';
 import { ICD10_DATABASE } from '@/data/constants';
-import type { Diagnosis } from '@/types/order';
+import type { Diagnosis, CoverageTier } from '@/types/order';
 import { X } from 'lucide-react';
 
 export function DiagnosisPanel() {
@@ -27,10 +27,33 @@ export function DiagnosisPanel() {
       ).filter(d => !order.diagnoses.some(existing => existing.code === d.code)).slice(0, 8)
     : [];
 
+  const looksLikeCode = /^[A-Za-z]\d{2,}/.test(search.trim());
+  const alreadyAdded = order.diagnoses.some(d => d.code.toUpperCase() === search.trim().toUpperCase());
+  const showFreeText = query.length > 0 && results.length === 0 && looksLikeCode && !alreadyAdded;
+
   const addDiagnosis = (d: Diagnosis) => {
     setDiagnoses([...order.diagnoses, d]);
     setSearch('');
     setShowDropdown(false);
+  };
+
+  const addFreeTextDiagnosis = () => {
+    const code = search.trim().toUpperCase();
+    if (!code || alreadyAdded) return;
+    addDiagnosis({ code, description: 'Custom diagnosis code', tier: 'yellow' as CoverageTier });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      if (results.length > 0) {
+        addDiagnosis(results[0]);
+      } else if (showFreeText) {
+        addFreeTextDiagnosis();
+      }
+    }
+    if (e.key === 'Escape') {
+      setShowDropdown(false);
+    }
   };
 
   const removeDiagnosis = (code: string) => {
@@ -54,10 +77,11 @@ export function DiagnosisPanel() {
           value={search}
           onChange={e => { setSearch(e.target.value); setShowDropdown(true); }}
           onFocus={() => setShowDropdown(true)}
+          onKeyDown={handleKeyDown}
           placeholder="Search ICD-10 code or description..."
           className="w-full h-10 rounded-lg border border-border px-3 text-sm text-foreground placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
         />
-        {showDropdown && results.length > 0 && (
+        {showDropdown && (results.length > 0 || showFreeText) && (
           <div className="absolute z-20 top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto">
             {results.map(r => {
               const style = tierStyles[r.tier];
@@ -73,6 +97,16 @@ export function DiagnosisPanel() {
                 </button>
               );
             })}
+            {showFreeText && (
+              <button
+                onClick={addFreeTextDiagnosis}
+                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted transition-colors text-left"
+              >
+                <span className="w-2 h-2 rounded-full shrink-0 bg-tier-yellow" />
+                <span className="font-medium text-sm text-foreground">{search.trim().toUpperCase()}</span>
+                <span className="text-sm text-text-tertiary">Add custom code (press Enter)</span>
+              </button>
+            )}
           </div>
         )}
       </div>
