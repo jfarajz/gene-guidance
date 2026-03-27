@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useOrder } from '@/context/OrderContext';
+import { Camera, X, RefreshCw } from 'lucide-react';
 
 const US_STATES = [
   'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD',
@@ -78,7 +79,7 @@ function ValidatedSelect({ value, onChange, required = false, children, ...props
 const inputCls = 'w-full h-10 rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors';
 
 export function PatientScreen() {
-  const { order, updatePatient, updateInsurance, updateCollection, setStep } = useOrder();
+  const { order, updatePatient, updateInsurance, updateCollection, updateInsuranceCards, setStep } = useOrder();
   const pat = order.patient;
   const ins = order.insurance;
   const col = order.collection;
@@ -183,31 +184,55 @@ export function PatientScreen() {
       {/* Card 2: Insurance Information */}
       <div className="bg-card rounded-xl border border-border p-6">
         <h3 className="text-lg font-semibold text-foreground mb-4">Insurance information</h3>
-        <div className="space-y-4">
-          <div>
-            <label className={labelCls}>Insurance type <span className="text-destructive">*</span></label>
-            <PillRadio options={['Commercial', 'Medicare', 'Medicaid', 'Other Ins.']} value={ins.type} onChange={v => updateInsurance({ ...ins, type: v })} />
-          </div>
-          <div>
-            <label className={labelCls}>Relationship to insured <span className="text-destructive">*</span></label>
-            <PillRadio options={['Self', 'Spouse', 'Dependent', 'Other']} value={ins.relationshipToInsured} onChange={v => updateInsurance({ ...ins, relationshipToInsured: v })} />
-          </div>
-          <div>
-            <label className={labelCls}>Primary insurance provider</label>
-            <input type="text" value={ins.provider} onChange={e => updateInsurance({ ...ins, provider: e.target.value })} placeholder="Insurance provider" className={inputCls} />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6">
+          {/* Left column: fields */}
+          <div className="space-y-4">
             <div>
-              <label className={labelCls}>Policy ID <span className="text-destructive">*</span></label>
-              <ValidatedInput required type="text" value={ins.policyId} onChange={e => updateInsurance({ ...ins, policyId: e.target.value })} placeholder="Policy ID" />
+              <label className={labelCls}>Insurance type <span className="text-destructive">*</span></label>
+              <PillRadio options={['Commercial', 'Medicare', 'Medicaid', 'Other Ins.']} value={ins.type} onChange={v => updateInsurance({ ...ins, type: v })} />
             </div>
             <div>
-              <label className={labelCls}>Group ID</label>
-              <input type="text" value={ins.groupId} onChange={e => updateInsurance({ ...ins, groupId: e.target.value })} placeholder="Group ID" className={inputCls} />
+              <label className={labelCls}>Relationship to insured <span className="text-destructive">*</span></label>
+              <PillRadio options={['Self', 'Spouse', 'Dependent', 'Other']} value={ins.relationshipToInsured} onChange={v => updateInsurance({ ...ins, relationshipToInsured: v })} />
             </div>
             <div>
-              <label className={labelCls}>Insurance phone</label>
-              <input type="tel" value={ins.phoneNumber} onChange={e => updateInsurance({ ...ins, phoneNumber: e.target.value })} placeholder="Phone number" className={inputCls} />
+              <label className={labelCls}>Primary insurance provider</label>
+              <input type="text" value={ins.provider} onChange={e => updateInsurance({ ...ins, provider: e.target.value })} placeholder="Insurance provider" className={inputCls} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className={labelCls}>Policy ID <span className="text-destructive">*</span></label>
+                <ValidatedInput required type="text" value={ins.policyId} onChange={e => updateInsurance({ ...ins, policyId: e.target.value })} placeholder="Policy ID" />
+              </div>
+              <div>
+                <label className={labelCls}>Group ID</label>
+                <input type="text" value={ins.groupId} onChange={e => updateInsurance({ ...ins, groupId: e.target.value })} placeholder="Group ID" className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Insurance phone</label>
+                <input type="tel" value={ins.phoneNumber} onChange={e => updateInsurance({ ...ins, phoneNumber: e.target.value })} placeholder="Phone number" className={inputCls} />
+              </div>
+            </div>
+          </div>
+
+          {/* Right column: card photos */}
+          <div>
+            <label className={labelCls}>Insurance card</label>
+            <div className="flex flex-col gap-3">
+              <InsuranceCardUpload
+                photo={order.insuranceCards.front}
+                side="Front of card"
+                sideLabel="Front"
+                onCapture={(url) => updateInsuranceCards({ front: url })}
+                onRemove={() => updateInsuranceCards({ front: '' })}
+              />
+              <InsuranceCardUpload
+                photo={order.insuranceCards.back}
+                side="Back of card"
+                sideLabel="Back"
+                onCapture={(url) => updateInsuranceCards({ back: url })}
+                onRemove={() => updateInsuranceCards({ back: '' })}
+              />
             </div>
           </div>
         </div>
