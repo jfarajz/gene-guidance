@@ -79,7 +79,8 @@ export function MedicationPanel() {
   const alreadyAdded = order.medications.some(m => m.generic.toLowerCase() === query);
   const showFreeText = query.length >= 2 && results.length === 0 && !alreadyAdded;
 
-  const tabMeds = order.medications.filter(m => m.type === activeTab);
+  const prescribed = order.medications.filter(m => m.type === 'prescribed');
+  const considered = order.medications.filter(m => m.type === 'considered');
 
   const handleSelect = (med: typeof MEDICATION_DATABASE[0]) => {
     const geneMatches = getGeneMatches(med.generic);
