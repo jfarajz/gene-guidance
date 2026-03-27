@@ -86,6 +86,10 @@ function InsuranceCardUpload({ photo, side, sideLabel, onCapture, onRemove }: {
   onRemove: () => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const [showCamera, setShowCamera] = useState(false);
+  const [cameraError, setCameraError] = useState('');
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -97,6 +101,77 @@ function InsuranceCardUpload({ photo, side, sideLabel, onCapture, onRemove }: {
     reader.readAsDataURL(file);
     e.target.value = '';
   };
+
+  const startCamera = async () => {
+    setCameraError('');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+      });
+      streamRef.current = stream;
+      setShowCamera(true);
+      // Wait for video element to mount
+      requestAnimationFrame(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play();
+        }
+      });
+    } catch {
+      setCameraError('Camera not available');
+      // Fallback to file picker
+      inputRef.current?.click();
+    }
+  };
+
+  const stopCamera = () => {
+    streamRef.current?.getTracks().forEach(t => t.stop());
+    streamRef.current = null;
+    setShowCamera(false);
+  };
+
+  const capturePhoto = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(video, 0, 0);
+    onCapture(canvas.toDataURL('image/jpeg', 0.9));
+    stopCamera();
+  };
+
+  // Cleanup on unmount
+  useEffect(() => () => {
+    streamRef.current?.getTracks().forEach(t => t.stop());
+  }, []);
+
+  if (showCamera) {
+    return (
+      <div>
+        <div className="relative aspect-[8/5] rounded-lg overflow-hidden border border-border bg-black">
+          <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+          <div className="absolute bottom-2 left-0 right-0 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={stopCamera}
+              className="px-3 py-1.5 rounded-lg bg-background/80 text-xs text-foreground border border-border cursor-pointer hover:bg-background"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={capturePhoto}
+              className="w-10 h-10 rounded-full bg-white border-4 border-primary cursor-pointer hover:bg-primary/10 transition-colors"
+              aria-label="Take photo"
+            />
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground text-center mt-1">{sideLabel}</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -113,21 +188,34 @@ function InsuranceCardUpload({ photo, side, sideLabel, onCapture, onRemove }: {
           </button>
           <button
             type="button"
-            onClick={() => inputRef.current?.click()}
+            onClick={() => { onRemove(); setTimeout(startCamera, 100); }}
             className="absolute bottom-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-background/80 text-xs text-foreground border border-border cursor-pointer hover:bg-background flex items-center gap-1"
           >
             <RefreshCw size={10} /> Retake
           </button>
         </div>
       ) : (
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="w-full aspect-[8/5] rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors"
-        >
+        <div className="w-full aspect-[8/5] rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-muted/30 transition-colors">
           <Camera size={24} className="text-muted-foreground" />
           <span className="text-xs text-muted-foreground">{side}</span>
-        </button>
+          {cameraError && <span className="text-[10px] text-destructive">{cameraError}</span>}
+          <div className="flex gap-2 mt-1">
+            <button
+              type="button"
+              onClick={startCamera}
+              className="px-3 py-1 rounded-md bg-primary text-primary-foreground text-xs cursor-pointer hover:bg-primary/90 transition-colors"
+            >
+              Camera
+            </button>
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="px-3 py-1 rounded-md border border-input bg-background text-foreground text-xs cursor-pointer hover:bg-muted transition-colors"
+            >
+              Upload
+            </button>
+          </div>
+        </div>
       )}
       <p className="text-xs text-muted-foreground text-center mt-1">{sideLabel}</p>
     </div>
