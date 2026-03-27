@@ -279,18 +279,21 @@ export function ReviewScreen() {
 function MedLine({ med }: { med: import('@/types/order').Medication }) {
   return (
     <div className="flex items-center gap-1.5 text-sm py-0.5">
-      <span className={`font-medium ${med.isBillable ? 'text-foreground' : 'text-destructive'}`}>{med.generic}</span>
-      {med.isBillable ? (
-        <>
-          {med.geneMatches.map(gm => (
-            <span key={gm.gene} className="bg-gene-badge-bg text-gene-badge-text text-[10px] px-1.5 py-0.5 rounded font-medium">{gm.gene}</span>
-          ))}
-          {med.geneMatches.map(gm => (
-            <span key={gm.cpt} className="bg-gene-badge-bg text-gene-badge-text text-[10px] px-1.5 py-0.5 rounded font-medium">{gm.cpt}</span>
-          ))}
-        </>
-      ) : (
-        <span className="text-[10px] text-destructive">Not in MolDx</span>
+      <span className={`font-medium ${med.isBillable ? 'text-foreground' : med.isTested ? 'text-tier-purple' : 'text-destructive'}`}>{med.generic}</span>
+      {med.isBillable && med.geneMatches.map(gm => (
+        <span key={gm.gene} className="bg-gene-badge-bg text-gene-badge-text text-[10px] px-1.5 py-0.5 rounded font-medium">{gm.gene}</span>
+      ))}
+      {med.isBillable && med.geneMatches.map(gm => (
+        <span key={gm.cpt} className="bg-gene-badge-bg text-gene-badge-text text-[10px] px-1.5 py-0.5 rounded font-medium">{gm.cpt}</span>
+      ))}
+      {med.testedGenes.length > 0 && med.testedGenes.map(g => (
+        <span key={g} className="bg-tier-purple-border text-tier-purple text-[10px] px-1.5 py-0.5 rounded font-medium">{g}</span>
+      ))}
+      {!med.isBillable && !med.isTested && (
+        <span className="text-[10px] text-destructive">No gene interaction</span>
+      )}
+      {!med.isBillable && med.isTested && (
+        <span className="text-[10px] text-tier-purple">Tested · not separately billable</span>
       )}
     </div>
   );
