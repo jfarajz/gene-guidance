@@ -99,10 +99,14 @@ function extractFromText(text: string): Partial<OrderState> {
   const specimen = grab(text, 'Specimen Type');
 
   // --- ICD-10 Codes ---
-  const icdMatches = text.matchAll(/([A-Z]\d{2}(?:\.\d{1,4})?)\s*[-–—]\s*([^\n,]+?)(?=\s+[A-Z]\d{2}[\.\s]|\s+MEDICATIONS|\s*$)/gi);
+  // PDF text may have codes and descriptions separated (codes grouped, then descriptions grouped)
+  // or inline as "code - description". Try both patterns.
   const diagnoses: Diagnosis[] = [];
   const seenCodes = new Set<string>();
-  for (const m of icdMatches) {
+
+  // First try: "code - description" inline pattern
+  const inlineMatches = text.matchAll(/([A-Z]\d{2}(?:\.\d{1,4})?)\s*[-–—]\s*([^\n,]+?)(?=\s+[A-Z]\d{2}[\.\s]|\s+MEDICATIONS|\s*$)/gi);
+  for (const m of inlineMatches) {
     const code = m[1].toUpperCase();
     if (seenCodes.has(code)) continue;
     seenCodes.add(code);
@@ -112,6 +116,25 @@ function extractFromText(text: string): Partial<OrderState> {
       description: dbEntry?.description || m[2].trim(),
       tier: dbEntry?.tier || 'red',
     });
+  }
+
+  // If no inline matches, extract bare ICD-10 codes from the ICD section
+  if (diagnoses.length === 0) {
+    const icdSection = text.match(/ICD-?10\s*Codes?\s*([\s\S]*?)(?=\s*(?:Collection|MEDICATIONS|Insurance|Tests|$))/i);
+    if (icdSection) {
+      const codeMatches = icdSection[1].matchAll(/([A-Z]\d{2}(?:\.\d{1,4})?)/gi);
+      for (const cm of codeMatches) {
+        const code = cm[1].toUpperCase();
+        if (seenCodes.has(code)) continue;
+        seenCodes.add(code);
+        const dbEntry = ICD10_DATABASE.find(d => d.code === code);
+        diagnoses.push({
+          code,
+          description: dbEntry?.description || code,
+          tier: dbEntry?.tier || 'red',
+        });
+      }
+    }
   }
 
   // --- Medications ---
