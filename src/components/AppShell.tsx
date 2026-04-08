@@ -1,5 +1,6 @@
 import { useOrder } from "@/context/OrderContext";
 import { DEMO_COMPLETE, DEMO_INTERACTIVE } from "@/data/demo";
+import { PdfDropZone } from "@/components/PdfDropZone";
 
 const STEPS = ["Provider", "Patient", "Clinical", "Review", "Documents"];
 
@@ -25,6 +26,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
           <div className="hidden sm:flex gap-2">
+            <PdfDropZone compact />
             <button
               onClick={() => loadDemo(DEMO_COMPLETE)}
               className="text-[11px] px-2 py-0.5 rounded border border-primary-foreground/20 text-primary-foreground/70 hover:text-primary-foreground hover:border-primary-foreground/40 transition-colors"

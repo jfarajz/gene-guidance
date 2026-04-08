@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useOrder } from '@/context/OrderContext';
 import { Check } from 'lucide-react';
+import { PdfDropZone } from '@/components/PdfDropZone';
 
 const NPI_LOOKUP: Record<string, { name: string; facilityName: string; address: string; city: string; state: string; zip: string }> = {
   '1528419710': {
@@ -127,6 +128,11 @@ export function ProviderScreen() {
             Continue →
           </button>
         </div>
+      </div>
+
+      {/* PDF Import Drop Zone */}
+      <div className="max-w-lg mx-auto">
+        <PdfDropZone />
       </div>
     </div>
   );
