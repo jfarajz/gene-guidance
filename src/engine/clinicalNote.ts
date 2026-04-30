@@ -141,13 +141,14 @@ export function generateClinicalNote(state: OrderState): string {
 
     for (const med of prescribedPsych) {
       const dx = psychDx.find((d) => d.code === med.linkedDiagnosis) || psychDx[0];
+      const drugClass = getDrugClass(med.generic).toLowerCase();
       if (parts.length === 0) {
         parts.push(
-          `The patient has ${dx.description} (${dx.code}). The patient is currently taking ${med.generic} ${med.dose} for ${dx.description.toLowerCase()}. I want to use PGx testing for ${geneStr(med.generic)} to evaluate the genetic impact on this ${med.generic === "venlafaxine" || med.generic === "vortioxetine" ? "antidepressant" : "SSRI"} medication and determine if the patient will respond to therapy.`,
+          `The patient has ${dx.description} (${dx.code}). The patient is currently taking ${med.generic} ${med.dose} for ${dx.description.toLowerCase()}. I want to use PGx testing for ${geneStr(med.generic)} to evaluate the genetic impact on this ${drugClass} and determine if the patient will respond to therapy.`,
         );
       } else {
         parts.push(
-          `The patient is also taking ${med.generic} ${med.dose}. I want to use PGx testing for ${geneStr(med.generic)} to evaluate the genetic impact on this medication and determine if the patient will respond to therapy.`,
+          `The patient is also taking ${med.generic} ${med.dose} (${drugClass}). I want to use PGx testing for ${geneStr(med.generic)} to evaluate the genetic impact on this medication and determine if the patient will respond to therapy.`,
         );
       }
     }
