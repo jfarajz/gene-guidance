@@ -180,12 +180,8 @@ export function generateClinicalNote(state: OrderState): string {
         parts.push(
           `Additionally, the patient is taking clopidogrel ${hasClopidogrel.dose} for cardiovascular protection, which requires CYP2C19 testing to ensure proper activation of this prodrug.`,
         );
-      } else {
-        parts.push(
-          `Additionally, the patient may benefit from antiplatelet therapy with clopidogrel for cardiovascular protection. I want to use PGx testing for the CYP2C19 gene to assess the genetic impact on clopidogrel activation, as this prodrug requires proper metabolism for therapeutic efficacy.`,
-        );
       }
-    }
+      // Sprint 1: removed "may benefit from" clopidogrel prose for considered case.
 
     if (opioidMeds.length > 0) {
       const opioidNames = opioidMeds.map((m) => m.generic).join(" and ");
