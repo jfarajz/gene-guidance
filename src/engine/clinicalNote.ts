@@ -153,10 +153,16 @@ export function generateClinicalNote(state: OrderState): string {
       }
     }
 
-// Sprint 1: removed "considered" alternatives generation. Documents must
+    // Sprint 1: removed "considered" alternatives generation. Documents must
     // describe only medications actually present in the patient's chart, not
     // hypothetical alternatives. If the provider wants alternatives mentioned,
     // they should be added to the chart as prescribed first.
+
+    if (parts.length > 0) {
+      lines.push(parts.join(" "));
+      lines.push("");
+    }
+  }
 
   // ── Paragraph 2: Cardio + Pain (CYP2D6-centric) ──
   {
@@ -182,6 +188,7 @@ export function generateClinicalNote(state: OrderState): string {
         );
       }
       // Sprint 1: removed "may benefit from" clopidogrel prose for considered case.
+    }
 
     if (opioidMeds.length > 0) {
       const opioidNames = opioidMeds.map((m) => `${m.generic} ${m.dose}`).join(" and ");
