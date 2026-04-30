@@ -184,9 +184,9 @@ export function generateClinicalNote(state: OrderState): string {
       // Sprint 1: removed "may benefit from" clopidogrel prose for considered case.
 
     if (opioidMeds.length > 0) {
-      const opioidNames = opioidMeds.map((m) => m.generic).join(" and ");
+      const opioidNames = opioidMeds.map((m) => `${m.generic} ${m.dose}`).join(" and ");
       parts.push(
-        `The patient may also require pain management in the future, and CYP2D6 testing will help evaluate the genetic impact on opioid medications such as ${opioidNames}.`,
+        `The patient is taking ${opioidNames} for pain management. CYP2D6 testing evaluates the genetic impact on opioid metabolism for these medications.`,
       );
     }
 
