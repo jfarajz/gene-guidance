@@ -202,15 +202,14 @@ export function generateClinicalNote(state: OrderState): string {
 
     if (hasLipid) {
       const currentStatin = medications.find((m) => STATINS.has(m.generic) && m.type === "prescribed");
-      if (currentStatin) {
+      if (currentStatin && currentStatin.generic === "fluvastatin") {
         parts.push(
-          `The patient has ${hasLipid.description} (${hasLipid.code}) and is currently on ${currentStatin.generic} ${currentStatin.dose}. I want to consider alternative statin therapy such as fluvastatin and use PGx testing for the CYP2C9 gene to evaluate the genetic impact on statin metabolism and determine optimal lipid management therapy.`,
-        );
-      } else {
-        parts.push(
-          `The patient has ${hasLipid.description} (${hasLipid.code}). I want to consider alternative statin therapy such as fluvastatin and use PGx testing for the CYP2C9 gene to evaluate the genetic impact on statin metabolism and determine optimal lipid management therapy.`,
+          `The patient has ${hasLipid.description} (${hasLipid.code}) and is currently on ${currentStatin.generic} ${currentStatin.dose}. PGx testing for the CYP2C9 gene evaluates the genetic impact on fluvastatin metabolism for this patient.`,
         );
       }
+      // Sprint 1: removed prose suggesting fluvastatin as an alternative when
+      // the patient is not actually taking it. Statin PGx is only ordered when
+      // a CYP2C9-relevant statin is in the chart.
     }
 
     for (const med of nsaidMeds) {
