@@ -227,7 +227,7 @@ export function generateClinicalNote(state: OrderState): string {
   // ── Paragraph 4: Ondansetron (brief) ──
   if (ondansetron) {
     lines.push(
-      `The patient may also require antiemetic therapy with ondansetron, and CYP2D6 testing will help evaluate the genetic impact on this medication.`,
+      `The patient is currently taking ondansetron ${ondansetron.dose} for nausea/emesis. CYP2D6 testing evaluates the genetic impact on ondansetron metabolism per CPIC guideline.`,
     );
     lines.push("");
   }
