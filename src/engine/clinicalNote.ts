@@ -153,26 +153,10 @@ export function generateClinicalNote(state: OrderState): string {
       }
     }
 
-    if (consideredPsych.length > 0) {
-      const medNames = consideredPsych.map((m) => m.generic).join(", ");
-      const allGenes = [...new Set(consideredPsych.flatMap((m) => DRUG_GENE_MAP[m.generic] || []))];
-      const geneText = allGenes.length === 1 ? `the ${allGenes[0]} gene` : `the genes ${allGenes.join(" and ")}`;
-      if (consideredPsych.length === 1) {
-        parts.push(
-          `I also want to consider alternative antidepressant therapy such as ${medNames}, and to use PGx testing for ${geneText} to see the genetic impact on this medication and if the patient will respond to therapy.`,
-        );
-      } else {
-        parts.push(
-          `I also want to consider alternative antidepressant therapy including ${medNames}, and to use PGx testing for ${geneText} to see the genetic impact on these antidepressant medications and if the patient will respond to therapy.`,
-        );
-      }
-    }
-
-    if (parts.length > 0) {
-      lines.push(parts.join(" "));
-      lines.push("");
-    }
-  }
+// Sprint 1: removed "considered" alternatives generation. Documents must
+    // describe only medications actually present in the patient's chart, not
+    // hypothetical alternatives. If the provider wants alternatives mentioned,
+    // they should be added to the chart as prescribed first.
 
   // ── Paragraph 2: Cardio + Pain (CYP2D6-centric) ──
   {
