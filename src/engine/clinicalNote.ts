@@ -1,48 +1,31 @@
 import type { OrderState } from "@/types/order";
+import { BILLABLE_GENES, MEDICATION_DATABASE } from "@/data/constants";
 
-// Drug → gene safety mapping
-const DRUG_GENE_MAP: Record<string, string[]> = {
-  paroxetine: ["CYP2D6"],
-  fluvoxamine: ["CYP2D6"],
-  sertraline: ["CYP2C19"],
-  escitalopram: ["CYP2C19"],
-  citalopram: ["CYP2C19"],
-  amitriptyline: ["CYP2C19", "CYP2D6"],
-  doxepin: ["CYP2C19", "CYP2D6"],
-  clomipramine: ["CYP2C19", "CYP2D6"],
-  imipramine: ["CYP2C19", "CYP2D6"],
-  trimipramine: ["CYP2C19", "CYP2D6"],
-  vortioxetine: ["CYP2D6"],
-  venlafaxine: ["CYP2D6"],
-  clopidogrel: ["CYP2C19"],
-  codeine: ["CYP2D6"],
-  tramadol: ["CYP2D6"],
-  ondansetron: ["CYP2D6"],
-  "metoprolol tartrate": ["CYP2D6"],
-  "metoprolol succinate": ["CYP2D6"],
-  metoprolol: ["CYP2D6"],
-  carvedilol: ["CYP2D6"],
-  propafenone: ["CYP2D6"],
-  fluvastatin: ["CYP2C9"],
-  meloxicam: ["CYP2C9"],
-  celecoxib: ["CYP2C9"],
-  piroxicam: ["CYP2C9"],
-  warfarin: ["CYP2C9"],
-  phenytoin: ["CYP2C9"],
-  aripiprazole: ["CYP2D6"],
-  brexpiprazole: ["CYP2D6"],
-  atomoxetine: ["CYP2D6"],
-  nortriptyline: ["CYP2D6"],
-  desipramine: ["CYP2D6"],
-};
+// Derive drug → gene mapping from the canonical BILLABLE_GENES source-of-truth.
+// This ensures the clinical note generator and the qualification engine always
+// agree on drug-gene pairings.
+function getGenesForDrug(generic: string): string[] {
+  const name = generic.toLowerCase().trim();
+  const genes: string[] = [];
+  for (const [gene, data] of Object.entries(BILLABLE_GENES)) {
+    if (data.medications.some((m) => m === name)) {
+      genes.push(gene);
+    }
+  }
+  return genes;
+}
+
+function getDrugClass(generic: string): string {
+  const entry = MEDICATION_DATABASE.find((m) => m.generic === generic.toLowerCase().trim());
+  return entry?.class || "medication";
+}
 
 function geneStr(generic: string): string {
-  const genes = DRUG_GENE_MAP[generic];
-  if (!genes || genes.length === 0) return "";
+  const genes = getGenesForDrug(generic);
+  if (genes.length === 0) return "";
   if (genes.length === 1) return `the ${genes[0]} gene`;
   return `the ${genes.join(" and ")} genes`;
 }
-
 const PSYCH_GENERICS = new Set([
   "citalopram",
   "escitalopram",
