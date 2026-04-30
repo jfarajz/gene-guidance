@@ -188,6 +188,7 @@ export function generateClinicalNote(state: OrderState): string {
         );
       }
       // Sprint 1: removed "may benefit from" clopidogrel prose for considered case.
+    }
 
     if (opioidMeds.length > 0) {
       const opioidNames = opioidMeds.map((m) => `${m.generic} ${m.dose}`).join(" and ");
