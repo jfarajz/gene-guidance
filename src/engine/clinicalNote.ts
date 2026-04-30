@@ -172,11 +172,7 @@ export function generateClinicalNote(state: OrderState): string {
           `The patient also has essential primary hypertension (${htnDx.code}) and is taking ${med.generic} ${med.dose}. I want to use PGx testing for the CYP2D6 gene to investigate the genetic impact on this cardiovascular medication and ensure appropriate blood pressure control.`,
         );
       }
-      for (const med of bbConsidered) {
-        parts.push(
-          `The patient also has essential primary hypertension (${htnDx.code}) and is being considered for beta blocker therapy with ${med.generic}. I want to use PGx testing for the CYP2D6 gene to investigate the genetic impact on this cardiovascular medication and ensure appropriate blood pressure control.`,
-        );
-      }
+// Sprint 1: removed "considered" beta-blocker therapy prose.
     }
 
     if (hasClopidogrel) {
